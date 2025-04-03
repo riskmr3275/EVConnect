@@ -1,0 +1,106 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                   String      @id @default(uuid())
+  name                 String
+  email                String      @unique
+  password             String
+  accountType          AccountType
+  image                String?
+  gender               String?
+  dateOfBirth          DateTime?
+  about                String?     @default("")
+  contactNumber        String?     @unique
+  token                String?
+  tokenExpires         DateTime?
+  resetPasswordExpires DateTime?
+  evs                  EV[]
+  bookings             Booking[]
+  stations             Station[]
+  createdAt            DateTime    @default(now())
+  updatedAt            DateTime    @updatedAt
+
+  @@index([email]) // ✅ Index for quick lookups
+  @@index([contactNumber]) // ✅ Index for searching users by contact
+}
+
+model EV {
+  id           String    @id @default(uuid())
+  userId       String
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  model        String
+  licensePlate String    @unique
+  station      Station[]
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([userId]) // ✅ Indexing EVs by user
+}
+
+model Station {
+  id             String    @id @default(uuid())
+  name           String
+  companyName    String?
+  ownerType      OwnerType
+  ownerId        String
+  owner          User      @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  address        String
+  latitude       Float
+  longitude      Float
+  totalSlots     Int
+  availableSlots Int
+  contact        String?
+  evs            EV[]
+  bookings       Booking[]
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@index([ownerId]) // ✅ Indexing stations by owner
+  @@index([latitude, longitude]) // ✅ Index for geo-location searches
+}
+
+model Booking {
+  id        String        @id @default(uuid())
+  userId    String
+  stationId String
+  startTime DateTime
+  endTime   DateTime
+  status    BookingStatus @default(PENDING)
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  station   Station       @relation(fields: [stationId], references: [id], onDelete: Cascade)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@index([userId]) // ✅ Optimize user-based searches
+  @@index([stationId]) // ✅ Optimize station-based searches
+  @@index([startTime, endTime]) // ✅ Optimize time-based searches
+}
+
+enum AccountType {
+  USER
+  ADMIN
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
+enum OwnerType {
+  COMPANY
+  INDIVIDUAL
+}
