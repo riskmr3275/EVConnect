@@ -1,12 +1,30 @@
-# React + Vite
+# ⚡ EV Charging Station Management System
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A complete **EV Charging Station Management System** that enables users to book charging slots, manage EVs, handle payments, and track charging history. Built using **Prisma, PostgreSQL, and Node.js**.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 📌 Features
+- ✅ **User Authentication** (Signup/Login, Profile Management)
+- ✅ **EV Registration & Management**
+- ✅ **Charging Station Listing & Search (Geo-location Support)**
+- ✅ **Slot Booking System (Reserve, Modify, Cancel)**
+- ✅ **Payments & Transactions (Penalties, Refunds, and Charges)**
+- ✅ **Charging History (Track Energy Consumption & Costs)**
+- ✅ **Reviews & Ratings (Feedback for Stations)**
+- ✅ **Notifications (Booking Confirmations, Payment Updates, etc.)**
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend using TypeScript and enable type-aware lint rules. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## 🛠 Tech Stack
+| Category     | Technology |
+|-------------|-----------|
+| **Backend**  | Node.js, Express.js |
+| **Database** | PostgreSQL |
+| **ORM**      | Prisma |
+| **Auth**     | JWT Authentication |
+| **Cloud Storage** | Cloudinary,AWS,Docker (for profile images,server,Dockerize) |
+
+---
+
+## 📂 Project Structure
