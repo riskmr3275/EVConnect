@@ -4,7 +4,18 @@
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
-generator client {
+// 1. Generate Prisma Client
+// Run the following command to regenerate the Prisma Client (needed for the latest schema changes):
+
+// ```bash
+// npx prisma generate
+
+// 2.Create and Run the Migration
+// Now, apply the changes to the database by running:
+
+// npx prisma migrate dev --name added_transaction_and_fixes
+
+ generator client {
   provider = "prisma-client-js"
 }
 
@@ -14,27 +25,31 @@ datasource db {
 }
 
 model User {
-  id                   String      @id @default(uuid())
+  id                   String       @id @default(uuid())
   name                 String
-  email                String      @unique
+  email                String       @unique
   password             String
   accountType          AccountType
   image                String?
   gender               String?
   dateOfBirth          DateTime?
-  about                String?     @default("")
-  contactNumber        String?     @unique
+  about                String?      @default("")
+  contactNumber        String?      @unique
   token                String?
   tokenExpires         DateTime?
   resetPasswordExpires DateTime?
   evs                  EV[]
   bookings             Booking[]
   stations             Station[]
-  createdAt            DateTime    @default(now())
-  updatedAt            DateTime    @updatedAt
+  transactions         Transaction[]
+  reviews              Review[]
+  notifications        Notification[]
+  chargingHistories    ChargingHistory[]
+  createdAt            DateTime     @default(now())
+  updatedAt            DateTime     @updatedAt
 
-  @@index([email]) // ✅ Index for quick lookups
-  @@index([contactNumber]) // ✅ Index for searching users by contact
+  @@index([email])
+  @@index([contactNumber])
 }
 
 model EV {
@@ -47,16 +62,16 @@ model EV {
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 
-  @@index([userId]) // ✅ Indexing EVs by user
+  @@index([userId])
 }
 
 model Station {
-  id             String    @id @default(uuid())
+  id             String           @id @default(uuid())
   name           String
   companyName    String?
   ownerType      OwnerType
   ownerId        String
-  owner          User      @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  owner          User             @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   address        String
   latitude       Float
   longitude      Float
@@ -65,11 +80,14 @@ model Station {
   contact        String?
   evs            EV[]
   bookings       Booking[]
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+  chargingSlots  ChargingSlot[]
+  reviews        Review[]
+  chargingHistories ChargingHistory[]
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
 
-  @@index([ownerId]) // ✅ Indexing stations by owner
-  @@index([latitude, longitude]) // ✅ Index for geo-location searches
+  @@index([ownerId])
+  @@index([latitude, longitude])
 }
 
 model Booking {
@@ -81,12 +99,73 @@ model Booking {
   status    BookingStatus @default(PENDING)
   user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   station   Station       @relation(fields: [stationId], references: [id], onDelete: Cascade)
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @updatedAt
+  transaction Transaction?
+  chargingHistory ChargingHistory?
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
 
-  @@index([userId]) // ✅ Optimize user-based searches
-  @@index([stationId]) // ✅ Optimize station-based searches
-  @@index([startTime, endTime]) // ✅ Optimize time-based searches
+  @@index([userId])
+  @@index([stationId])
+  @@index([startTime, endTime])
+}
+
+model Transaction {
+  id         String            @id @default(uuid())
+  userId     String
+  user       User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amount     Float
+  type       TransactionType
+  status     TransactionStatus @default(PENDING)
+  bookingId  String? @unique // ✅ Ensuring one-to-one relation with Booking
+  booking    Booking?         @relation(fields: [bookingId], references: [id], onDelete: SetNull)
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+}
+
+model ChargingSlot {
+  id         String    @id @default(uuid())
+  stationId  String
+  station    Station   @relation(fields: [stationId], references: [id], onDelete: Cascade)
+  isOccupied Boolean   @default(false)
+  powerLevel Int       // Power output in kW
+  type       SlotType
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+}
+
+model Review {
+  id         String   @id @default(uuid())
+  userId     String
+  stationId  String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  station    Station  @relation(fields: [stationId], references: [id], onDelete: Cascade)
+  rating     Int      @default(3) // 1 to 5 stars
+  comment    String?
+  createdAt  DateTime @default(now())
+}
+
+model ChargingHistory {
+  id          String   @id @default(uuid())
+  userId      String
+  stationId   String
+  bookingId   String? @unique // ✅ Ensuring one-to-one relation with Booking
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  station     Station  @relation(fields: [stationId], references: [id], onDelete: Cascade)
+  booking     Booking?  @relation(fields: [bookingId], references: [id], onDelete: SetNull)
+  energyUsed  Float    // in kWh
+  cost        Float
+  duration    Int      // in minutes
+  createdAt   DateTime @default(now())
+}
+
+model Notification {
+  id         String           @id @default(uuid())
+  userId     String
+  user       User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  message    String
+  type       NotificationType
+  isRead     Boolean          @default(false)
+  createdAt  DateTime         @default(now())
 }
 
 enum AccountType {
@@ -103,4 +182,29 @@ enum BookingStatus {
 enum OwnerType {
   COMPANY
   INDIVIDUAL
+}
+
+enum TransactionType {
+  PAYMENT
+  PENALTY
+  REFUND
+}
+
+enum TransactionStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+enum SlotType {
+  AC
+  DC
+  FAST
+}
+
+enum NotificationType {
+  BOOKING_CONFIRMATION
+  BOOKING_CANCELLATION
+  PAYMENT_SUCCESS
+  PENALTY_APPLIED
 }
