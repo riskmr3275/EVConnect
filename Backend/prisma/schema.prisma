@@ -7,13 +7,12 @@
 // 1. Generate Prisma Client
 // Run the following command to regenerate the Prisma Client (needed for the latest schema changes):
 
-// ```bash
-// npx prisma generate
+//----> npx prisma generate
 
 // 2.Create and Run the Migration
 // Now, apply the changes to the database by running:
 
-// npx prisma migrate dev --name added_transaction_and_fixes
+//----> npx prisma migrate dev --name added_transaction_and_fixes
 
  generator client {
   provider = "prisma-client-js"
