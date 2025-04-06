@@ -7,7 +7,7 @@ app.use(express.json());
 // ✅ Get All EV Stations
 app.get("/", async (req, res) => {
     console.log("Welcome to EV Stations API, your server is running successfully!");
-   res.json({ message: "Welcome to EV Stations API, your server is running successfully!" ,
+    res.json({ message: "Welcome to EV Stations API, your server is running successfully!" ,
     
    });
 });
