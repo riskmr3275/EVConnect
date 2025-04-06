@@ -1,15 +1,28 @@
 const express = require("express");
+const dotenv = require("dotenv");
 const prisma = require("./config/database");
-require("dotenv").config();
+
+//Routes
+const userRoutes = require("./routes/User");
+
+dotenv.config();
+
 const app = express();
 app.use(express.json());
 
-// ✅ Get All EV Stations
-app.get("/", async (req, res) => {
-    console.log("Welcome to EV Stations API, your server is running successfully!");
-    res.json({ message: "Welcome to EV Stations API, your server is running successfully!" ,
-    
-   });
+// 👋 Health check route
+app.get("/", (req, res) => {
+  console.log("Welcome to EV Stations API, your server is running successfully!");
+  res.json({ message: "Welcome to EV Stations API, your server is running successfully!" });
 });
- 
-app.listen(process.env.PORT || 4000, () => console.log("🚀 Server running on port 4000"));
+
+
+// ✅ Mount user routes
+app.use("/api/users", userRoutes);
+
+
+
+
+// 🚀 Start server
+const PORT = process.env.PORT || 4000;
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
