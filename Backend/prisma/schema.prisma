@@ -36,7 +36,7 @@ model User {
   contactNumber        String?      @unique
   token                String?
   tokenExpires         DateTime?
-  resetPasswordExpires DateTime?
+  resetPasswordExpires DateTime?-
   evs                  EV[]
   bookings             Booking[]
   stations             Station[]
