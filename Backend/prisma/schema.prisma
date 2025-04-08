@@ -14,201 +14,16 @@
 
 //----> npx prisma migrate dev --name added_transaction_and_fixes
 
- generator client {
+ // Prisma schema for EVconnect - Optimized Version
+
+// Prisma Generator
+generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-}
-
-model User {
-  id                   String       @id @default(uuid())
-  name                 String
-  email                String       @unique
-  password             String
-  accountType          AccountType
-  image                String?
-  gender               String?
-  dateOfBirth          DateTime?
-  about                String?      @default("")
-  contactNumber        String?      @unique
-  token                String?
-  tokenExpires         DateTime?
-  resetPasswordExpires DateTime?
-  evs                  EV[]
-  bookings             Booking[]
-  stations             Station[]
-  transactions         Transaction[]
-  reviews              Review[]
-  notifications        Notification[]
-  chargingHistories    ChargingHistory[]
-
-  userDetails          UserDetails?
-  ownerDetails         OwnerDetails?
-  adminDetails         AdminDetails?
-  stationMasterDetails StationMasterDetails?
-  createdAt            DateTime     @default(now())
-  updatedAt            DateTime     @updatedAt
-
-  @@index([email])
-  @@index([contactNumber])
-}
-
-model UserDetails {
-  id          String   @id @default(uuid())
-  userId      String   @unique
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  address     String?
-  preferences String?
-  createdAt   DateTime @default(now())
-}
-
-model OwnerDetails {
-  id           String   @id @default(uuid())
-  userId       String   @unique
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  companyRegNo String
-  companyDocs  String
-  createdAt    DateTime @default(now())
-}
-
-model AdminDetails {
-  id         String   @id @default(uuid())
-  userId     String   @unique
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  employeeId String
-  department String
-  createdAt  DateTime @default(now())
-}
-
-model StationMasterDetails {
-  id                String   @id @default(uuid())
-  userId            String   @unique
-  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  assignedStationId String
-  shift             String
-  createdAt         DateTime @default(now())
-}
-
-
-
-
-model EV {
-  id           String    @id @default(uuid())
-  userId       String
-  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  model        String
-  licensePlate String    @unique
-  station      Station[]
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-
-  @@index([userId])
-}
-
-model Station {
-  id             String           @id @default(uuid())
-  name           String
-  companyName    String?
-  ownerType      OwnerType
-  ownerId        String
-  owner          User             @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  address        String
-  latitude       Float
-  longitude      Float
-  totalSlots     Int
-  availableSlots Int
-  contact        String?
-  evs            EV[]
-  bookings       Booking[]
-  chargingSlots  ChargingSlot[]
-  reviews        Review[]
-  chargingHistories ChargingHistory[]
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
-
-  @@index([ownerId])
-  @@index([latitude, longitude])
-}
-
-model Booking {
-  id        String        @id @default(uuid())
-  userId    String
-  stationId String
-  startTime DateTime
-  endTime   DateTime
-  status    BookingStatus @default(PENDING)
-  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  station   Station       @relation(fields: [stationId], references: [id], onDelete: Cascade)
-  transaction Transaction?
-  chargingHistory ChargingHistory?
-  createdAt  DateTime      @default(now())
-  updatedAt  DateTime      @updatedAt
-
-  @@index([userId])
-  @@index([stationId])
-  @@index([startTime, endTime])
-}
-
-model Transaction {
-  id         String            @id @default(uuid())
-  userId     String
-  user       User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  amount     Float
-  type       TransactionType
-  status     TransactionStatus @default(PENDING)
-  bookingId  String? @unique // ✅ Ensuring one-to-one relation with Booking
-  booking    Booking?         @relation(fields: [bookingId], references: [id], onDelete: SetNull)
-  createdAt  DateTime         @default(now())
-  updatedAt  DateTime         @updatedAt
-}
-
-model ChargingSlot {
-  id         String    @id @default(uuid())
-  stationId  String
-  station    Station   @relation(fields: [stationId], references: [id], onDelete: Cascade)
-  isOccupied Boolean   @default(false)
-  powerLevel Int       // Power output in kW
-  type       SlotType
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-}
-
-model Review {
-  id         String   @id @default(uuid())
-  userId     String
-  stationId  String
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  station    Station  @relation(fields: [stationId], references: [id], onDelete: Cascade)
-  rating     Int      @default(3) // 1 to 5 stars
-  comment    String?
-  createdAt  DateTime @default(now())
-}
-
-model ChargingHistory {
-  id          String   @id @default(uuid())
-  userId      String
-  stationId   String
-  bookingId   String? @unique // ✅ Ensuring one-to-one relation with Booking
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  station     Station  @relation(fields: [stationId], references: [id], onDelete: Cascade)
-  booking     Booking?  @relation(fields: [bookingId], references: [id], onDelete: SetNull)
-  energyUsed  Float    // in kWh
-  cost        Float
-  duration    Int      // in minutes
-  createdAt   DateTime @default(now())
-}
-
-model Notification {
-  id         String           @id @default(uuid())
-  userId     String
-  user       User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  message    String
-  type       NotificationType
-  isRead     Boolean          @default(false)
-  createdAt  DateTime         @default(now())
 }
 
 enum AccountType {
@@ -258,4 +73,205 @@ enum NotificationType {
   BOOKING_CANCELLATION
   PAYMENT_SUCCESS
   PENALTY_APPLIED
+}
+
+model User {
+  id                   String       @id @default(uuid())
+  name                 String
+  email                String       @unique
+  password             String
+  accountType          AccountType
+  image                String?
+  gender               String?
+  dateOfBirth          DateTime?
+  about                String?      @default("")
+  contactNumber        String?      @unique
+  token                String?
+  tokenExpires         DateTime?
+  resetPasswordExpires DateTime?
+
+  evs                  EV[]
+  bookings             Booking[]
+  stations             Station[]     @relation("StationOwner")
+  transactions         Transaction[]
+  reviews              Review[]
+  notifications        Notification[]
+  chargingHistories    ChargingHistory[]
+
+  userDetails          UserDetails?
+  ownerDetails         OwnerDetails?
+  adminDetails         AdminDetails?
+  stationMasterDetails StationMasterDetails?
+
+  createdAt            DateTime     @default(now())
+  updatedAt            DateTime     @updatedAt
+
+  @@index([email])
+  @@index([contactNumber])
+}
+
+model UserDetails {
+  id          String   @id @default(uuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  address     String?
+  preferences String?
+  city        String?
+  state       String?
+  zipCode     String?
+  createdAt   DateTime @default(now())
+}
+
+model OwnerDetails {
+  id           String   @id @default(uuid())
+  userId       String   @unique
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  companyName  String
+  companyRegNo String
+  companyDocs  String
+  address      String?
+  contactEmail String?
+  createdAt    DateTime @default(now())
+}
+
+model AdminDetails {
+  id         String   @id @default(uuid())
+  userId     String   @unique
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  employeeId String
+  department String
+  accessLevel Int     @default(1)
+  assignedZone String?
+  createdAt  DateTime @default(now())
+}
+
+model StationMasterDetails {
+  id                String   @id @default(uuid())
+  userId            String   @unique
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  assignedStationId String
+  shift             String
+  experience        Int?
+  certification     String?
+  createdAt         DateTime @default(now())
+}
+
+model EV {
+  id               String   @id @default(uuid())
+  userId           String
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  brand            String
+  model            String
+  licensePlate     String   @unique
+  batteryCapacity  Float
+  batteryPercentage Float
+  isDefault        Boolean  @default(false)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model Station {
+  id               String           @id @default(uuid())
+  name             String
+  companyName      String?
+  ownerType        OwnerType
+  ownerId          String
+  owner            User             @relation("StationOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  address          String
+  latitude         Float
+  longitude        Float
+  totalSlots       Int
+  availableSlots   Int
+  contact          String?
+  bookings         Booking[]
+  chargingSlots    ChargingSlot[]
+  reviews          Review[]
+  chargingHistories ChargingHistory[]
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  @@index([ownerId])
+  @@index([latitude, longitude])
+}
+
+model Booking {
+  id               String        @id @default(uuid())
+  userId           String
+  stationId        String
+  evId             String
+  startTime        DateTime
+  endTime          DateTime
+  status           BookingStatus @default(PENDING)
+  user             User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  station          Station       @relation(fields: [stationId], references: [id], onDelete: Cascade)
+  transaction      Transaction?
+  chargingHistory  ChargingHistory?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  @@index([userId])
+  @@index([stationId])
+  @@index([startTime, endTime])
+}
+
+model Transaction {
+  id         String            @id @default(uuid())
+  userId     String
+  user       User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amount     Float
+  type       TransactionType
+  status     TransactionStatus @default(PENDING)
+  bookingId  String? @unique
+  booking    Booking?          @relation(fields: [bookingId], references: [id], onDelete: SetNull)
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime          @updatedAt
+}
+
+model ChargingSlot {
+  id         String    @id @default(uuid())
+  stationId  String
+  station    Station   @relation(fields: [stationId], references: [id], onDelete: Cascade)
+  isOccupied Boolean   @default(false)
+  powerLevel Int       // in kW
+  type       SlotType
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+}
+
+model Review {
+  id         String   @id @default(uuid())
+  userId     String
+  stationId  String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  station    Station  @relation(fields: [stationId], references: [id], onDelete: Cascade)
+  rating     Int      @default(3)
+  comment    String?
+  createdAt  DateTime @default(now())
+}
+
+model ChargingHistory {
+  id         String   @id @default(uuid())
+  userId     String
+  stationId  String
+  bookingId  String? @unique
+  evId       String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  station    Station  @relation(fields: [stationId], references: [id], onDelete: Cascade)
+  booking    Booking? @relation(fields: [bookingId], references: [id], onDelete: SetNull)
+  energyUsed Float
+  cost       Float
+  duration   Int      // in minutes
+  createdAt  DateTime @default(now())
+}
+
+model Notification {
+  id         String           @id @default(uuid())
+  userId     String
+  user       User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  message    String
+  type       NotificationType
+  isRead     Boolean          @default(false)
+  createdAt  DateTime         @default(now())
 }
