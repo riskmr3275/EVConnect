@@ -140,8 +140,8 @@ export default function EVDashboard() {
   const textClass = darkMode ? 'text-gray-300' : 'text-gray-600';
   const headingClass = darkMode ? 'text-white' : 'text-gray-800';
   const sidebarClass = darkMode ? 'bg-gray-800' : 'bg-black';
-   const highlightClass = darkMode ? 'bg-indigo-700' : 'bg-indigo-500';
-  const buttonClass = darkMode ? 'bg-indigo-700 hover:bg-indigo-600' : 'bg-indigo-500 hover:bg-indigo-600';
+   const highlightClass = darkMode ? 'bg-indigo-700' : 'bg-black';
+  const buttonClass = darkMode ? 'bg-indigo-700 hover:bg-indigo-600' : 'bg-black hover:bg-gray-700 hover:cursor-pointer';
 
   return (
     <div className={`flex h-screen ${mainContentClass}`}>
@@ -163,7 +163,7 @@ export default function EVDashboard() {
               <li>
                 <button 
                   onClick={() => setActiveTab('mybookings')}
-                  className={`flex items-center w-full py-2 px-4 rounded-lg ${activeTab === 'mybookings' ? 'bg-white text-black' : 'text-gray-300 hover:bg-gray-500 hover:cursor-pointer'}`}
+                  className={`flex items-center w-full py-2 px-4 transition-all duration-75 rounded-lg ${activeTab === 'mybookings' ? 'bg-white text-black' : 'text-gray-300 hover:bg-gray-500 hover:cursor-pointer'}`}
                 >
                   <Calendar className="mr-3" size={18} />
                   My Bookings
@@ -172,7 +172,7 @@ export default function EVDashboard() {
               <li>
                 <button 
                   onClick={() => setActiveTab('availableslots')}
-                  className={`flex items-center w-full py-2 px-4 rounded-lg ${activeTab === 'availableslots' ? 'bg-white text-black' : 'text-gray-300 hover:bg-gray-500 hover:cursor-pointer'}`}
+                  className={`flex items-center w-full py-2 px-4 transition-all duration-75 rounded-lg ${activeTab === 'availableslots' ? 'bg-white text-black' : 'text-gray-300 hover:bg-gray-500 hover:cursor-pointer'}`}
                 >
                   <Settings className="mr-3" size={18} />
                   Available Slots
@@ -181,7 +181,7 @@ export default function EVDashboard() {
               <li>
                 <button 
                   onClick={() => setActiveTab('addev')}
-                  className={`flex items-center w-full py-2 px-4 rounded-lg ${activeTab === 'addev' ? 'bg-white text-black' : 'text-gray-300 hover:bg-gray-500 hover:cursor-pointer'}`}
+                  className={`flex items-center w-full py-2 px-4 transition-all duration-75 rounded-lg ${activeTab === 'addev' ? 'bg-white text-black' : 'text-gray-300 hover:bg-gray-500 hover:cursor-pointer'}`}
                 >
                   <Car className="mr-3" size={18} />
                   Add Your EV
@@ -190,7 +190,7 @@ export default function EVDashboard() {
               <li>
                 <button 
                   onClick={() => setActiveTab('settings')}
-                  className={`flex items-center w-full py-2 px-4 rounded-lg ${activeTab === 'settings' ? 'bg-white text-black' : 'text-gray-300 hover:bg-gray-500 hover:cursor-pointer'}`}
+                  className={`flex items-center w-full py-2 px-4 transition-all duration-75 rounded-lg ${activeTab === 'settings' ? 'bg-white text-black' : 'text-gray-300 hover:bg-gray-500 hover:cursor-pointer'}`}
                 >
                   <Settings className="mr-3" size={18} />
                   Settings
@@ -199,7 +199,7 @@ export default function EVDashboard() {
               <li>
                 <button 
                   onClick={() => console.log('Logout clicked')}
-                  className={`flex items-center w-full py-2 px-4 rounded-lg text-red-600 hover:cursor-pointer`}
+                  className={`flex items-center w-full py-2 px-4 transition-all duration-75 rounded-lg text-red-600 hover:cursor-pointer`}
                 >
                   <LogOut className="mr-3" size={18} />
                   Logout
@@ -271,7 +271,7 @@ export default function EVDashboard() {
                         <p className={`text-2xl font-semibold ${headingClass}`}>{user.totalBookings}</p>
                       </div>
                       <div className={`rounded-full p-2 ${highlightClass} bg-opacity-10`}>
-                        <Calendar className={highlightClass} size={20} />
+                        <Calendar className="text-white" size={20} />
                       </div>
                     </div>
                   </div>
@@ -283,7 +283,7 @@ export default function EVDashboard() {
                         <p className={`text-2xl font-semibold ${headingClass}`}>{user.upcomingBookings}</p>
                       </div>
                       <div className={`rounded-full p-2 ${highlightClass} bg-opacity-10`}>
-                        <Clock className={highlightClass} size={20} />
+                        <Clock className="text-white"size={20} />
                       </div>
                     </div>
                   </div>
@@ -295,7 +295,7 @@ export default function EVDashboard() {
                         <p className={`text-2xl font-semibold ${headingClass}`}>{user.completedSessions}</p>
                       </div>
                       <div className={`rounded-full p-2 ${highlightClass} bg-opacity-10`}>
-                        <Check className={highlightClass} size={20} />
+                        <Check className="text-white" size={20} />
                       </div>
                     </div>
                   </div>
@@ -307,7 +307,7 @@ export default function EVDashboard() {
                         <p className={`text-2xl font-semibold ${headingClass}`}>{user.cancelledSessions}</p>
                       </div>
                       <div className={`rounded-full p-2 ${highlightClass} bg-opacity-10`}>
-                        <X className={highlightClass} size={20} />
+                        <X className="text-white" size={20} />
                       </div>
                     </div>
                   </div>

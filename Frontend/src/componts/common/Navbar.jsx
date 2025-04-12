@@ -9,7 +9,10 @@ const Navbar = () => {
        <nav className="sticky top-0 z-50 bg-black shadow-sm">
         <div className="container mx-auto flex justify-between items-center p-4">
           <div className="flex items-center space-x-6">
-           <a href="/"> <h1 className="text-white font-bold text-2xl">EVConnect</h1></a>
+          <a href="/">
+          <img src="/src/assets/logo.png" alt="EVConnect Logo" className="h-13 w-auto object-contain" />
+
+                          </a>
             <div className="hidden md:flex space-x-4">
               <a href="/" className="text-white font-bold hover:text-gray-600">Home</a>
               <a href="#" className="text-white font-bold hover:text-gray-600">Find Stations </a>
