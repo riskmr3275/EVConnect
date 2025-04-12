@@ -7,8 +7,8 @@ class AuthController {
     // Register a new user
     async createUser(req, res) {
         try {
-            const userData = req.body;
-            const newUser = await authService.createUser(userData);
+            const {name, email, password, accountType, gender, contactNumber} = req.body;
+            const newUser = await authService.createUser(name, email, password, accountType, gender, contactNumber);
             return res.status(201).json({ message: 'User created successfully', data: newUser });
         } catch (error) {
             return res.status(400).json({ message: error.message });
