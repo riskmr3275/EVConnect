@@ -3,6 +3,7 @@ import { Route, Routes } from "react-router-dom";
 import Homepage from './componts/Pages/Homepage';
 import Navbar from './componts/common/Navbar';
 import Login from './componts/Authenication/Login';
+import EVDashboard from './componts/Dashboard/EVDashboard';
 
 function App() {
    
@@ -14,6 +15,7 @@ function App() {
             <Routes>
               <Route path="/" element={<Homepage />} />
               <Route path="/login" element={<Login />} />
+              <Route path="/dashboard" element={<EVDashboard />} />
 
               {/* <Route path="/" element={<Homepage />} /> */}
 
