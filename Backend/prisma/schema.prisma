@@ -90,6 +90,7 @@ model User {
   tokenExpires         DateTime?
   resetPasswordExpires DateTime?
 
+  otps                 OTP[]
   evs                  EV[]
   bookings             Booking[]
   stations             Station[]     @relation("StationOwner")
@@ -102,6 +103,7 @@ model User {
   ownerDetails         OwnerDetails?
   adminDetails         AdminDetails?
   stationMasterDetails StationMasterDetails?
+
 
   createdAt            DateTime     @default(now())
   updatedAt            DateTime     @updatedAt
@@ -274,4 +276,14 @@ model Notification {
   type       NotificationType
   isRead     Boolean          @default(false)
   createdAt  DateTime         @default(now())
+}
+
+model OTP {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  otp        String   // The OTP code
+  createdAt  DateTime @default(now())  // Timestamp when OTP is generated
+  expiresAt  DateTime // Timestamp when OTP expires
+  isUsed     Boolean  @default(false) // Marks if the OTP has been used
 }

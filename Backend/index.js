@@ -3,7 +3,7 @@ const dotenv = require("dotenv");
 const prisma = require("./config/database");
 
 //Routes
-const userRoutes = require("./routes/User");
+const authRoutes = require("./routes/authRoutes");
 
 dotenv.config();
 
@@ -18,7 +18,7 @@ app.get("/", (req, res) => {
 
 
 // ✅ Mount user routes
-app.use("/api/users", userRoutes);
+app.use("/api/auth", authRoutes);
 
 
 
