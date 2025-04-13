@@ -18,11 +18,11 @@ class StationService {
                 totalSlots,
                 availableSlots: totalSlots,
                 contact,
-                owner: {
-                    connect: {
-                        id: user.userId, // Assuming userId is the ID of the owner
-                    },
-                },
+                // owner: {
+                //     connect: {
+                //         id: user.userId, // Assuming userId is the ID of the owner
+                //     },
+                // },
             },
         });
         return newStation;
