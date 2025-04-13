@@ -6,14 +6,10 @@ dotenv.config();
 
 exports.auth = async (req, res, next) => {
   try {
-    const token =
-      req.cookies.token ||
-      req.body.token ||
-      req.header("authorization")?.replace("Bearer ", "");
-
-    // const token= req.user.token;
-    console.log(token);
-
+    console.log("Hello i m from auth middleware");
+    const token = req.cookies.token || req.body.token || req.header("authorization")?.replace("Bearer ", "");
+    console.log("Token in auth::", token);
+    
     if (!token) {
       return res.status(401).json({ success: false, message: "Token missing" });
     }
@@ -47,4 +43,15 @@ exports.isAdmin = (req, res, next) => {}
 
 exports.isStationMaster = (req, res, next) => {}
 
-exports.isOwner = (req, res, next) => {}
+exports.isOwner = (req, res, next) => {
+  // console.log("User ID middleeware:", req.user);
+  try{
+    if(req.user.accountType !== "OWNER"){
+      return res.status(401).json({ success: false, message: "User is not owner" });
+    }
+    next();
+  }
+  catch(error){
+    return res.status(401).json({ success: false, message: "User is not owner" });
+  }
+}

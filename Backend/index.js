@@ -1,14 +1,14 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const prisma = require("./config/database");
+const cookieParser = require('cookie-parser');
 
-//Routes
-const authRoutes = require("./routes/authRoutes");
 
 dotenv.config();
 
 const app = express();
 app.use(express.json());
+app.use(cookieParser());
 
 // 👋 Health check route
 app.get("/", (req, res) => {
@@ -17,8 +17,13 @@ app.get("/", (req, res) => {
 });
 
 
+//Routes
+const authRoutes = require("./routes/authRoutes");
+const stationRoutes=require("./routes/stationRoutes");
+
 // ✅ Mount user routes
 app.use("/api/auth", authRoutes);
+app.use("/api/stations", stationRoutes);
 
 
 
