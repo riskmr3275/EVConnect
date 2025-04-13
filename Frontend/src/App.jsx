@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { Route, Routes } from "react-router-dom";
-import Homepage from './componts/Pages/Homepage';
-import Navbar from './componts/common/Navbar';
-import Login from './componts/Authenication/Login';
-import EVDashboard from './componts/Dashboard/EVDashboard';
+import Homepage from './components/Pages/Homepage';
+import Navbar from './components/common/Navbar';
+import Login from './components/Authenication/Login';
+import EVDashboard from './components/UserFiles/EVDashboard';
 
 function App() {
    
