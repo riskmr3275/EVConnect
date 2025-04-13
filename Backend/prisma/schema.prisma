@@ -151,12 +151,14 @@ model StationMasterDetails {
   id                String   @id @default(uuid())
   userId            String   @unique
   user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  assignedStationId String
+  stationId         String
+  station           Station  @relation(fields: [stationId], references: [id], onDelete: Cascade)
   shift             String
   experience        Int?
   certification     String?
   createdAt         DateTime @default(now())
 }
+
 
 model EV {
   id               String   @id @default(uuid())
@@ -187,6 +189,8 @@ model Station {
   totalSlots       Int
   availableSlots   Int
   contact          String?
+
+  stationMasters    StationMasterDetails[]
   bookings         Booking[]
   chargingSlots    ChargingSlot[]
   reviews          Review[]
