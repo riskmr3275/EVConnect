@@ -14,6 +14,7 @@ class StationMasterController{
                 dateOfBirth,
                 stationId,
                 shift,
+                user:req.user,
             })
             return res.status(201).json({message:"Station Master Created Successfully",stationMaster});
         }

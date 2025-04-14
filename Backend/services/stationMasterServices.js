@@ -5,6 +5,7 @@ const jwt = require("jsonwebtoken");
 
 class StationMasterServices {
   async createStationMaster(data) {
+    console.log("Creating station master with data:", data);
     const {
       name,
       email,
@@ -15,6 +16,7 @@ class StationMasterServices {
       dateOfBirth,
       stationId,
       shift,
+      user
     } = data;
 
     // Check if the user already exists
@@ -50,13 +52,17 @@ class StationMasterServices {
           userId: stationMaster.id,
           stationId,
           shift,
+          ownerId: user.userId,
         },
       });
 
       return {
+        result,
         ...stationMaster,
         stationMasterDetails: stationMasterAdditionalInfo,
       };
     });
   }
 }
+
+module.exports = new StationMasterServices();
