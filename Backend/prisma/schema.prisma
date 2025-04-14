@@ -101,6 +101,8 @@ model User {
   ownerDetails         OwnerDetails?
   adminDetails         AdminDetails?
   stationMasterDetails StationMasterDetails?
+
+
   createdAt            DateTime     @default(now())
   updatedAt            DateTime     @updatedAt
 
