@@ -7,6 +7,13 @@ export const authEndpoints = {
   LOGOUT_API: BASE_URL + "/auth/logout",           // Logout user
   GET_ME_API: BASE_URL + "/auth/me",               // Get logged-in user details
 }
+// ====================== STATION_MASTER ENDPOINTS ======================
+export const stationMasterEndpoints = {
+  STATIONMASTER_REGISTER_API: BASE_URL + "/stationmasters/addStationMaster", // Register station master
+  STATIONMATER_LOGIN_API: BASE_URL + "/auth/login", // Login station master
+  GET_STATIONMASTER_API: BASE_URL + "/stationmasters/getStationMaster/:id", // Get station master by ID
+  UPDATE_STATIONMASTER_API: BASE_URL + "/stationmasters/updateStationMaster/:id", // Update station master by ID
+}
 
 // ====================== USER ENDPOINTS ======================
 export const userEndpoints = {

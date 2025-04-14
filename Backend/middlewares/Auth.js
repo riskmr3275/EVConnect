@@ -37,11 +37,41 @@ exports.auth = async (req, res, next) => {
   }
 };
 
-exports.isUser = (req, res, next) => {}
+exports.isUser = (req, res, next) => {
+  try{
+    if(req.user.accountType !== "USER"){
+      return res.status(401).json({ success: false, message: "User is not USER" });
+    }
+    next();
+  }
+  catch(error){
+    return res.status(401).json({ success: false, message: "User is not USER" });
+  }
+}
 
-exports.isAdmin = (req, res, next) => {}
+exports.isAdmin = (req, res, next) => {
+  try{
+    if(req.user.accountType !== "ADMIN"){
+      return res.status(401).json({ success: false, message: "User is not ADMIN" });
+    }
+    next();
+  }
+  catch(error){
+    return res.status(401).json({ success: false, message: "User is not ADMIN" });
+  }
+}
 
-exports.isStationMaster = (req, res, next) => {}
+exports.isStationMaster = (req, res, next) => {
+  try{
+    if(req.user.accountType !== "STATIONMASTER"){
+      return res.status(401).json({ success: false, message: "User is not STATIONMASTER" });
+    }
+    next();
+  }
+  catch(error){
+    return res.status(401).json({ success: false, message: "User is not STATIONMASTER" });
+  }
+}
 
 exports.isOwner = (req, res, next) => {
   // console.log("User ID middleeware:", req.user);

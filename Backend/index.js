@@ -21,11 +21,13 @@ app.get("/", (req, res) => {
 const authRoutes = require("./routes/authRoutes");
 const stationRoutes=require("./routes/stationRoutes");
 const stationMastersRoutes=require("./routes/stationMastersRoutes");
+const evRoutes=require("./routes/evRoutes");
 
 // ✅ Mount user routes
 app.use("/api/auth", authRoutes);
 app.use("/api/stations", stationRoutes);
 app.use("/api/stationmasters", stationMastersRoutes);
+app.use("/api/evs", evRoutes);
 
 
 

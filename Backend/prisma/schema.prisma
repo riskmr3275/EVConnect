@@ -65,10 +65,18 @@ enum TransactionStatus {
 }
 
 enum SlotType {
-  AC
-  DC
-  FAST
+  BHARAT_AC_001
+  BHARAT_DC_001
+  TYPE_1_AC
+  TYPE_2_AC
+  GB_T_AC
+  CCS1_DC
+  CCS2_DC
+  GB_T_DC
+  CHADEMO
+  TESLA_SUPERCHARGER
 }
+
 
 enum NotificationType {
   BOOKING_CONFIRMATION
@@ -172,8 +180,9 @@ model EV {
   model            String
   licensePlate     String   @unique
   batteryCapacity  Float
-  batteryPercentage Float
-  isDefault        Boolean  @default(false)
+  preferredAcPort SlotType?
+  preferredDcPort SlotType?
+  isDefault        Boolean  @default(true)
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
