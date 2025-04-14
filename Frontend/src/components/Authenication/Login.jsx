@@ -1,17 +1,33 @@
 import React, { useState } from 'react';
 import Button  from '../common/Button';
 import Input  from '../common/Input';
-
+import { useNavigate } from 'react-router-dom';
+import { useSelector,useDispatch } from 'react-redux';
+ import { login } from '../../services/operations/authAPI';
 const UberLoginPage = () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.profile);
   const [isLogin, setIsLogin] = useState(true);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  })
+  const { email, password } = formData
+  const handleOnChange = (e) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      [e.target.name]: e.target.value,
+    }))
+  }
+ 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Implement login or signup logic
-    console.log(isLogin ? 'Logging in' : 'Signing up', email);
-  };
+    console.log("Email",email)
+    console.log("Password",password)
+    console.log('Form submitted:',  email, password );
+    dispatch(login(email, password, navigate))
+   };
 
   return (
     <div className="flex min-h-screen">
@@ -85,8 +101,9 @@ const UberLoginPage = () => {
               <Input
                 type="email"
                 id="email"
+                name="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={handleOnChange}
                 placeholder="Enter your email"
                 required
                 className="w-full"
@@ -104,8 +121,9 @@ const UberLoginPage = () => {
               <Input
                 type="password"
                 id="password"
+                name="password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={handleOnChange}
                 placeholder="Enter your password"
                 required
                 className="w-full"
@@ -140,9 +158,12 @@ const UberLoginPage = () => {
 
             <Button 
               type="submit" 
-              className="w-full mt-4"
+              className="w-full mt-4 cursor-pointer"
             >
-              {isLogin ? 'Log In' : 'Sign Up'}
+              {user?.loading ? (
+                              <span className="loader cursor-pointer"></span>
+                            ) : isLogin ? 'Login In' : 'Sign Up'}
+              
             </Button>
           </form>
 
@@ -151,7 +172,7 @@ const UberLoginPage = () => {
               {isLogin ? "Don't have an account? " : "Already have an account? "}
               <button 
                 onClick={() => setIsLogin(!isLogin)}
-                className="text-blue-600 hover:underline"
+                className="text-blue-600 hover:underline cursor-pointer"
               >
                 {isLogin ? 'Sign Up' : 'Log In'}
               </button>

@@ -2,15 +2,18 @@ const express = require("express");
 const dotenv = require("dotenv");
 const prisma = require("./config/database");
 const cookieParser = require('cookie-parser');
-
+const cors = require('cors');
 
 dotenv.config();
 
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
-
-// 👋 Health check route
+app.use(cors({
+  origin: "*",
+  credentials:true,
+}))
+// 👋 Health check rou  te
 app.get("/", (req, res) => {
   console.log("Welcome to EV Stations API, your server is running successfully!");
   res.json({ message: "Welcome to EV Stations API, your server is running successfully!" });
