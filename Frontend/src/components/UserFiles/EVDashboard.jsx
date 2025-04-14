@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Bell, LogOut, MapPin, User, Moon, Sun, Calendar, Battery, Home, Settings, Car, Star, Clock, ChevronDown, X, Filter, Check } from 'lucide-react';
-
+import { Bell, LogOut, MapPin, User, Moon, Sun, Calendar, Battery, Home, Settings, Car, Star, Clock, ChevronDown, X, Filter, Check, Sidebar } from 'lucide-react';
+import Sidebar1 from './Sidebar1';
 export default function EVDashboard() {
   // State management
   const [darkMode, setDarkMode] = useState(false);
@@ -145,113 +145,7 @@ export default function EVDashboard() {
 
   return (
     <div className={`flex h-screen ${mainContentClass}`}>
-      {/* Left Sidebar */}
-      <div className={`${sidebarClass} w-80 flex-shrink-0 hidden md:block h-full`}>
-        <div className="p-4">
-           
-          <nav>
-            <ul className="space-y-2 p-2  rounded-2xl h-full">
-              <li>
-                <button 
-                  onClick={() => setActiveTab('dashboard')}
-                  className={`flex items-center w-full py-2 px-4 rounded-lg ${activeTab === 'dashboard' ? 'bg-white text-black' : 'text-gray-300 hover:bg-gray-500 hover:cursor-pointer'}`}
-                >
-                  <Home className="mr-3" size={18} />
-                  Dashboard
-                </button>
-              </li>
-              <li>
-                <button 
-                  onClick={() => setActiveTab('mybookings')}
-                  className={`flex items-center w-full py-2 px-4 transition-all duration-75 rounded-lg ${activeTab === 'mybookings' ? 'bg-white text-black' : 'text-gray-300 hover:bg-gray-500 hover:cursor-pointer'}`}
-                >
-                  <Calendar className="mr-3" size={18} />
-                  My Bookings
-                </button>
-              </li>
-              <li>
-                <button 
-                  onClick={() => setActiveTab('availableslots')}
-                  className={`flex items-center w-full py-2 px-4 transition-all duration-75 rounded-lg ${activeTab === 'availableslots' ? 'bg-white text-black' : 'text-gray-300 hover:bg-gray-500 hover:cursor-pointer'}`}
-                >
-                  <Settings className="mr-3" size={18} />
-                  Available Slots
-                </button>
-              </li>
-              <li>
-                <button 
-                  onClick={() => setActiveTab('addev')}
-                  className={`flex items-center w-full py-2 px-4 transition-all duration-75 rounded-lg ${activeTab === 'addev' ? 'bg-white text-black' : 'text-gray-300 hover:bg-gray-500 hover:cursor-pointer'}`}
-                >
-                  <Car className="mr-3" size={18} />
-                  Add Your EV
-                </button>
-              </li>
-              <li>
-                <button 
-                  onClick={() => setActiveTab('settings')}
-                  className={`flex items-center w-full py-2 px-4 transition-all duration-75 rounded-lg ${activeTab === 'settings' ? 'bg-white text-black' : 'text-gray-300 hover:bg-gray-500 hover:cursor-pointer'}`}
-                >
-                  <Settings className="mr-3" size={18} />
-                  Settings
-                </button>
-              </li>
-              <li>
-                <button 
-                  onClick={() => console.log('Logout clicked')}
-                  className={`flex items-center w-full py-2 px-4 transition-all duration-75 rounded-lg text-red-600 hover:cursor-pointer`}
-                >
-                  <LogOut className="mr-3" size={18} />
-                  Logout
-                </button>
-              </li>
-            </ul>
-          </nav>
-        </div>
-      </div>
-
-      {/* Mobile sidebar toggle */}
-      <div className={`${sidebarClass} w-16 flex-shrink-0 md:hidden flex flex-col items-center py-4`}>
-        <div className="space-y-4">
-          <button 
-            onClick={() => setActiveTab('dashboard')}
-            className={`p-3 rounded-full ${activeTab === 'dashboard' ? 'bg-indigo-900' : 'hover:bg-indigo-600'}`}
-          >
-            <Home color="white" size={20} />
-          </button>
-          <button 
-            onClick={() => setActiveTab('mybookings')}
-            className={`p-3 rounded-full ${activeTab === 'mybookings' ? 'bg-indigo-900' : 'hover:bg-indigo-600'}`}
-          >
-            <Calendar color="white" size={20} />
-          </button>
-          <button 
-            onClick={() => setActiveTab('availableslots')}
-            className={`p-3 rounded-full ${activeTab === 'availableslots' ? 'bg-indigo-900' : 'hover:bg-indigo-600'}`}
-          >
-            <Calendar color="white" size={20} />
-          </button>
-          <button 
-            onClick={() => setActiveTab('addev')}
-            className={`p-3 rounded-full ${activeTab === 'addev' ? 'bg-indigo-900' : 'hover:bg-indigo-600'}`}
-          >
-            <Car color="white" size={20} />
-          </button>
-          <button 
-            onClick={() => setActiveTab('settings')}
-            className={`p-3 rounded-full ${activeTab === 'settings' ? 'bg-indigo-900' : 'hover:bg-indigo-600'}`}
-          >
-            <Settings color="white" size={20} />
-          </button>
-          <button 
-            onClick={() => console.log('Logout clicked')}
-            className="p-3 rounded-full hover:bg-indigo-600"
-          >
-            <LogOut color="white" size={20} />
-          </button>
-        </div>
-      </div>
-
+     
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         
@@ -261,7 +155,6 @@ export default function EVDashboard() {
           <div className="container mx-auto">
             {activeTab === 'dashboard' && (
               <>
-                 
                 {/* Overview Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
                   <div className={`${cardClass} rounded-lg shadow-sm p-4 border ${borderClass}`}>

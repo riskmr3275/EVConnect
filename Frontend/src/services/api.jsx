@@ -1,4 +1,4 @@
-const BASE_URL = process.env.BASE_URL || "https://your-booking-backend.vercel.app/api/v1"; // Deployed booking backend base URL
+const BASE_URL ="http://localhost:4000/api" || "https://your-booking-backend.vercel.app/api/v1"; // Deployed booking backend base URL
 
 // ====================== AUTH ENDPOINTS ======================
 export const authEndpoints = {
