@@ -19,6 +19,7 @@
 // Prisma Generator
 generator client {
   provider = "prisma-client-js"
+  output ="./node_module/@prisma/client"
 }
 
 datasource db {
@@ -98,6 +99,7 @@ model User {
   reviews              Review[]
   notifications        Notification[]
   chargingHistories    ChargingHistory[]
+  stationMastersUnderMe     StationMasterDetails[] @relation("StationMasterOwner")
 
   userDetails          UserDetails?
   ownerDetails         OwnerDetails?
@@ -152,6 +154,8 @@ model StationMasterDetails {
   user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   stationId         String
   station           Station  @relation(fields: [stationId], references: [id], onDelete: Cascade)
+  ownerId           String
+  owner             User     @relation("StationMasterOwner", fields: [ownerId], references: [id], onDelete: Cascade)
   shift             String
   experience        Int?
   certification     String?

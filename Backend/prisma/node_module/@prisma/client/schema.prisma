@@ -1,0 +1,295 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+// 1. Generate Prisma Client
+// Run the following command to regenerate the Prisma Client (needed for the latest schema changes):
+
+//----> npx prisma generate
+
+// 2.Create and Run the Migration
+// Now, apply the changes to the database by running:
+
+//----> npx prisma migrate dev --name added_transaction_and_fixes
+
+// Prisma schema for EVconnect - Optimized Version
+
+// Prisma Generator
+generator client {
+  provider = "prisma-client-js"
+  output   = "./node_module/@prisma/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum AccountType {
+  USER
+  OWNER
+  ADMIN
+  STATIONMASTER
+}
+
+enum Status {
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
+enum OwnerType {
+  COMPANY
+  INDIVIDUAL
+}
+
+enum TransactionType {
+  PAYMENT
+  PENALTY
+  REFUND
+}
+
+enum TransactionStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+enum SlotType {
+  AC
+  DC
+  FAST
+}
+
+enum NotificationType {
+  BOOKING_CONFIRMATION
+  BOOKING_CANCELLATION
+  PAYMENT_SUCCESS
+  PENALTY_APPLIED
+}
+
+model User {
+  id                   String      @id @default(uuid())
+  name                 String
+  email                String      @unique
+  password             String
+  accountType          AccountType
+  image                String?
+  gender               String?
+  dateOfBirth          DateTime?
+  about                String?     @default("")
+  contactNumber        String?     @unique
+  token                String?
+  tokenExpires         DateTime?
+  resetPasswordExpires DateTime?
+
+  otps                  OTP[]
+  evs                   EV[]
+  bookings              Booking[]
+  stations              Station[]              @relation("StationOwner")
+  transactions          Transaction[]
+  reviews               Review[]
+  notifications         Notification[]
+  chargingHistories     ChargingHistory[]
+  stationMastersUnderMe StationMasterDetails[] @relation("StationMasterOwner")
+
+  userDetails          UserDetails?
+  ownerDetails         OwnerDetails?
+  adminDetails         AdminDetails?
+  stationMasterDetails StationMasterDetails?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([email])
+  @@index([contactNumber])
+}
+
+model UserDetails {
+  id          String   @id @default(uuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  address     String?
+  preferences String?
+  city        String?
+  state       String?
+  zipCode     String?
+  createdAt   DateTime @default(now())
+}
+
+model OwnerDetails {
+  id           String   @id @default(uuid())
+  userId       String   @unique
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  companyName  String
+  companyRegNo String
+  companyDocs  String
+  address      String?
+  contactEmail String?
+  createdAt    DateTime @default(now())
+}
+
+model AdminDetails {
+  id           String   @id @default(uuid())
+  userId       String   @unique
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  employeeId   String
+  department   String
+  accessLevel  Int      @default(1)
+  assignedZone String?
+  createdAt    DateTime @default(now())
+}
+
+model StationMasterDetails {
+  id            String   @id @default(uuid())
+  userId        String   @unique
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stationId     String
+  station       Station  @relation(fields: [stationId], references: [id], onDelete: Cascade)
+  ownerId       String
+  owner         User     @relation("StationMasterOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  shift         String
+  experience    Int?
+  certification String?
+  createdAt     DateTime @default(now())
+}
+
+model EV {
+  id                String   @id @default(uuid())
+  userId            String
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  brand             String
+  model             String
+  licensePlate      String   @unique
+  batteryCapacity   Float
+  batteryPercentage Float
+  isDefault         Boolean  @default(false)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model Station {
+  id             String    @id @default(uuid())
+  name           String
+  companyName    String?
+  ownerType      OwnerType
+  ownerId        String
+  owner          User      @relation("StationOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  address        String
+  latitude       Float
+  longitude      Float
+  totalSlots     Int
+  availableSlots Int
+  contact        String?
+
+  stationMasters    StationMasterDetails[]
+  bookings          Booking[]
+  chargingSlots     ChargingSlot[]
+  reviews           Review[]
+  chargingHistories ChargingHistory[]
+  createdAt         DateTime               @default(now())
+  updatedAt         DateTime               @updatedAt
+
+  @@index([ownerId])
+  @@index([latitude, longitude])
+}
+
+model Booking {
+  id              String           @id @default(uuid())
+  userId          String
+  stationId       String
+  evId            String
+  startTime       DateTime
+  endTime         DateTime
+  status          BookingStatus    @default(PENDING)
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  station         Station          @relation(fields: [stationId], references: [id], onDelete: Cascade)
+  transaction     Transaction?
+  chargingHistory ChargingHistory?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  @@index([userId])
+  @@index([stationId])
+  @@index([startTime, endTime])
+}
+
+model Transaction {
+  id        String            @id @default(uuid())
+  userId    String
+  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amount    Float
+  type      TransactionType
+  status    TransactionStatus @default(PENDING)
+  bookingId String?           @unique
+  booking   Booking?          @relation(fields: [bookingId], references: [id], onDelete: SetNull)
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+}
+
+model ChargingSlot {
+  id         String   @id @default(uuid())
+  stationId  String
+  station    Station  @relation(fields: [stationId], references: [id], onDelete: Cascade)
+  isOccupied Boolean  @default(false)
+  powerLevel Int // in kW
+  type       SlotType
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  userId    String
+  stationId String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  station   Station  @relation(fields: [stationId], references: [id], onDelete: Cascade)
+  rating    Int      @default(3)
+  comment   String?
+  createdAt DateTime @default(now())
+}
+
+model ChargingHistory {
+  id         String   @id @default(uuid())
+  userId     String
+  stationId  String
+  bookingId  String?  @unique
+  evId       String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  station    Station  @relation(fields: [stationId], references: [id], onDelete: Cascade)
+  booking    Booking? @relation(fields: [bookingId], references: [id], onDelete: SetNull)
+  energyUsed Float
+  cost       Float
+  duration   Int // in minutes
+  createdAt  DateTime @default(now())
+}
+
+model Notification {
+  id        String           @id @default(uuid())
+  userId    String
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  message   String
+  type      NotificationType
+  isRead    Boolean          @default(false)
+  createdAt DateTime         @default(now())
+}
+
+model OTP {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  otp       String // The OTP code
+  createdAt DateTime @default(now()) // Timestamp when OTP is generated
+  expiresAt DateTime // Timestamp when OTP expires
+  isUsed    Boolean  @default(false) // Marks if the OTP has been used
+}

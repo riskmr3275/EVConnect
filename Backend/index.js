@@ -25,7 +25,7 @@ const stationMastersRoutes=require("./routes/stationMastersRoutes");
 // ✅ Mount user routes
 app.use("/api/auth", authRoutes);
 app.use("/api/stations", stationRoutes);
-// app.use("/api/stationmasters", stationMastersRoutes);
+app.use("/api/stationmasters", stationMastersRoutes);
 
 
 
