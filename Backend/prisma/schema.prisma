@@ -90,7 +90,6 @@ model User {
   token                String?
   tokenExpires         DateTime?
   resetPasswordExpires DateTime?
-
   otps                 OTP[]
   evs                  EV[]
   bookings             Booking[]
@@ -105,6 +104,7 @@ model User {
   ownerDetails         OwnerDetails?
   adminDetails         AdminDetails?
   stationMasterDetails StationMasterDetails?
+
 
   createdAt            DateTime     @default(now())
   updatedAt            DateTime     @updatedAt
@@ -293,4 +293,12 @@ model OTP {
   createdAt  DateTime @default(now())  // Timestamp when OTP is generated
   expiresAt  DateTime // Timestamp when OTP expires
   isUsed     Boolean  @default(false) // Marks if the OTP has been used
+}
+
+model Message {
+  id         String   @id @default(uuid())
+  senderId   String
+  receiverId String
+  content    String
+  timestamp  DateTime @default(now())
 }

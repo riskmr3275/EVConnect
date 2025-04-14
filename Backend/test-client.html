@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Socket.IO Chat Test</title>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  </head>
+  <body>
+    <h2>Simple Chat Test</h2>
+    <input id="userId" placeholder="Your ID" />
+    <input id="receiverId" placeholder="Receiver ID" />
+    <button onclick="register()">Connect</button>
+    <br><br>
+    <input id="msg" placeholder="Type message..." />
+    <button onclick="sendMsg()">Send</button>
+
+    <div id="chatBox" style="margin-top: 20px;"></div>
+
+    <script>
+      const socket = io("http://localhost:4000");
+      let userId = '';
+      let receiverId = '';
+
+      function register() {
+        userId = document.getElementById("userId").value;
+        receiverId = document.getElementById("receiverId").value;
+        socket.emit("register", userId);
+      }
+
+      function sendMsg() {
+        const message = document.getElementById("msg").value;
+        socket.emit("send_message", {
+          senderId: userId,
+          receiverId: receiverId,
+          message: message,
+        });
+        appendMessage(userId, message);
+        document.getElementById("msg").value = "";
+      }
+
+      socket.on("receive_message", ({ senderId, message }) => {
+        appendMessage(senderId, message);
+      });
+
+      function appendMessage(sender, message) {
+        const chat = document.getElementById("chatBox");
+        const line = document.createElement("p");
+        line.textContent = `${sender}: ${message}`;
+        chat.appendChild(line);
+      }
+    </script>
+  </body>
+</html>
