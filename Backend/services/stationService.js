@@ -3,9 +3,9 @@ const  prisma  = require("../config/database");
 class StationService {
     // Create a new station
     async createStation(data) {
-        console.log("Creating station with data:", data);
+        // console.log("Creating station with data:", data);
         const { name, companyName, ownerType, address, latitude, longitude, totalSlots, contact,user } = data;
-        console.log("User data:", user);
+        // console.log("User data:", user);
         const newStation = await prisma.station.create({
             data: {
                 name,

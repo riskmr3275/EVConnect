@@ -5,7 +5,7 @@ class StationController {
     async createStation(req, res) {
         try {
             const { name, companyName, ownerType, address, latitude, longitude, totalSlots, contact } = req.body;
-            console.log("Request body:", req.user);
+            // console.log("Request body:", req.user);
             const newStation = await stationService.createStation({
                 name,
                 companyName,
