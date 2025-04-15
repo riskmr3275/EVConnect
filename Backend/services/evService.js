@@ -30,7 +30,7 @@ const evService = {
             });
             return newEV;
         } catch (error) {
-            throw new Error('Error creating EV: ' + error.message);
+            throw new Error('Error creating EV: ' + error.message)
         }
     },
 
