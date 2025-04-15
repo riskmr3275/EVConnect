@@ -10,6 +10,8 @@ import Test from './components/UserFiles/Test';
 import Test1 from './components/UserFiles/Test1';
 import MyBookings from './components/UserFiles/MyBookings';
 import Settings from './components/UserFiles/Settings';
+import OwnDashboardPage from './components/OwnerDash/OwnDashboardPage';
+import EVStationsPage from './components/OwnerDash/EVStationsPage';
 function App() {
    
 
@@ -33,6 +35,8 @@ function App() {
                <Route path="dashboard/Booking" element={<Test1 />} />
              <Route path="/dashboard/addCv" element={<MyBookings />} />
               <Route path="dashboard/settings" element={<Settings />} />  
+              <Route path="dashboard/ownerDashboard" element={<OwnDashboardPage />} />  
+              <Route path="dashboard/station" element={<EVStationsPage />} />  
             </Route>
 
             </Routes>

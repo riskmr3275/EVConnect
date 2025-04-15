@@ -48,18 +48,18 @@ const Sidebar1 = () => {
       ];
     } else if (user.accountType === 'OWNER') {
       tabs = [
-        { name: 'dashboard', label: 'Owner Dashboard', icon: <Home className="mr-3" size={18} />, route: '/ownerDashboard' },
-        { name: 'station', label: 'Station', icon: <ClipboardList className="mr-3" size={18} />, route: '/station' },
-        { name: 'transactions', label: 'Transactions', icon: <DollarSign className="mr-3" size={18} />, route: '/transactions' },
-        { name: 'employees', label: 'Employees', icon: <Users className="mr-3" size={18} />, route: '/employees' },
-        { name: 'analytics', label: 'Analytics', icon: <BarChart2 className="mr-3" size={18} />, route: '/analytics' },
+        { name: 'dashboard', label: 'Dashboard', icon: <Home className="mr-3" size={18} />, route: '/dashboard/ownerDashboard' },
+        { name: 'station', label: 'Stations', icon: <ClipboardList className="mr-3" size={18} />, route: '/dashboard/station' },
+        { name: 'transactions', label: 'Transactions', icon: <DollarSign className="mr-3" size={18} />, route: '/dashboard/transactions' },
+        { name: 'employees', label: 'Employees', icon: <Users className="mr-3" size={18} />, route: '/dashboard/employees' },
+        { name: 'analytics', label: 'Analytics', icon: <BarChart2 className="mr-3" size={18} />, route: '/dashboard/analytics' },
         ...commonTabs,
       ];
     } else if (user.accountType === 'STATIONMASTER') {
       tabs = [
-        { name: 'dashboard', label: 'Station Master Dashboard', icon: <Home className="mr-3" size={18} />, route: '/stationMasterDashboard' },
-        { name: 'manageStation', label: 'Manage Station', icon: <ClipboardList className="mr-3" size={18} />, route: '/manageStation' },
-        { name: 'supportTickets', label: 'Support Tickets', icon: <Users className="mr-3" size={18} />, route: '/supportTickets' },
+        { name: 'dashboard', label: 'Station Master Dashboard', icon: <Home className="mr-3" size={18} />, route: '/dashboard/stationMasterDashboard' },
+        { name: 'manageStation', label: 'Manage Station', icon: <ClipboardList className="mr-3" size={18} />, route: '/dashboard/manageStation' },
+        { name: 'supportTickets', label: 'Support Tickets', icon: <Users className="mr-3" size={18} />, route: '/dashboard/supportTickets' },
         ...commonTabs,
       ];
     }
@@ -73,7 +73,7 @@ const Sidebar1 = () => {
   return (
     <>
       {/* Desktop Sidebar */}
-      <div className={`${sidebarClass} w-80 flex-shrink-0 hidden md:block h-full`}>
+      <div className={`${sidebarClass} w-80 flex-shrink-0 hidden md:block h-full border-r-1 border-white`}>
         <div className="p-4">
           <nav>
             <ul className="space-y-2 p-2 rounded-2xl h-full">
@@ -83,6 +83,7 @@ const Sidebar1 = () => {
                     onClick={() => {
                       if (tab.name === 'logout') {
                         console.log('Logout clicked');
+                        dispatch(logout(navigate));
                         // Add logout functionality here if necessary
                       } else {
                         setActiveTab(tab.name);
