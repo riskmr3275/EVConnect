@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { LogOut, Calendar, Home, Settings, Car, BarChart2, Users, DollarSign, ClipboardList } from 'lucide-react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom'; // For navigating between routes
-
+import {logout} from "../../services/operations/authAPI"
+import { useDispatch } from 'react-redux';
 const Sidebar1 = () => {
+  const dispatch = useDispatch();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [darkMode, setDarkMode] = useState(false);
   const { user } = useSelector((state) => state.profile);
@@ -108,6 +110,7 @@ const Sidebar1 = () => {
               onClick={() => {
                 if (tab.name === 'logout') {
                   console.log('Logout clicked');
+                  dispatch(logout(navigate));
                   // Add logout functionality here if necessary
                 } else {
                   setActiveTab(tab.name);
