@@ -1,5 +1,4 @@
-const { PrismaClient } = require("@prisma/client");
-const prismaClient = new PrismaClient();
+const  prisma  = require("../config/database");
 
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -8,14 +7,24 @@ const evService = {
     // Create a new EV
     async createEV(data) {
         try {
-            const newEV = await prismaClient.EV.create({
+            console.log(data)
+
+            const existingEV = await prisma.EV.findUnique({
+                where: { licensePlate: data.licensePlate }
+              });
+              if (existingEV) {
+                throw new Error("An EV with this license plate already exists.");
+              }
+
+            const newEV = await prisma.EV.create({
                 data: {
                     userId: data.user.userId,
                     brand: data.brand,
                     model: data.model,
                     licensePlate: data.licensePlate,
                     batteryCapacity: data.batteryCapacity,
-                    batteryPercentage: data.batteryPercentage,
+                    preferredAcPort: data.preferredAcPort || null,
+                    preferredDcPort: data.preferredDcPort || null,
                     isDefault: data.isDefault || true,
                 },
             });
@@ -28,7 +37,7 @@ const evService = {
     // Get all EVs for a user
     async getEV(userId) {
         try {
-            const evs = await prismaClient.EV.findMany({
+            const evs = await prisma.EV.findMany({
                 where: { userId },
             });
             return evs;
@@ -40,7 +49,7 @@ const evService = {
     // Get EV by ID
     async getEVById(id) {
         try {
-            const ev = await prismaClient.EV.findUnique({
+            const ev = await prisma.EV.findUnique({
                 where: { id },
             });
             return ev;
@@ -52,7 +61,7 @@ const evService = {
     // Update EV by ID
     async updateEV(id, updateData) {
         try {
-            const updatedEV = await prismaClient.EV.update({
+            const updatedEV = await prisma.EV.update({
                 where: { id },
                 data: updateData,
             });
@@ -65,7 +74,7 @@ const evService = {
     // Delete EV by ID
     async deleteEV(id) {
         try {
-            const deletedEV = await prismaClient.EV.delete({
+            const deletedEV = await prisma.EV.delete({
                 where: { id },
             });
             return deletedEV;

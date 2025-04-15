@@ -6,16 +6,17 @@ class EVController {
     // Create a new EV
     async createEV(req, res) {
         try {
-            const {user}=req.user;
-            const {  brand, model, licensePlate, batteryCapacity, batteryPercentage, isDefault } = req.body;
+            // const {user}=req.user;
+            const {  brand, model, licensePlate, batteryCapacity,preferredAcPort,preferredDcPort, isDefault } = req.body;
 
             const newEV = await evService.createEV({
                 brand,
                 model,
                 licensePlate,
                 batteryCapacity,
-                batteryPercentage,
-                user,
+                user:req.user,
+                preferredAcPort,
+                preferredDcPort,
             });
 
             return res.status(201).json({ message: 'EV created successfully', data: newEV });
