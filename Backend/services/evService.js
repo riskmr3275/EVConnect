@@ -7,16 +7,7 @@ const evService = {
     // Create a new EV
     async createEV(data) {
         try {
-            console.log(data)
-
-            const existingEV = await prisma.EV.findUnique({
-                where: { licensePlate: data.licensePlate }
-              });
-              if (existingEV) {
-                throw new Error("An EV with this license plate already exists.");
-              }
-
-            const newEV = await prisma.EV.create({
+            const newEV = await prismaClient.EV.create({
                 data: {
                     userId: data.user.userId,
                     brand: data.brand,
