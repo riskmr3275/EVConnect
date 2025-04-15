@@ -87,12 +87,12 @@ export function login(email, password, navigate) {
 
       localStorage.setItem("token", JSON.stringify(response.data?.token));
       localStorage.setItem("user", JSON.stringify(response.data.user));
-      navigate("/dashboard/userDashboard")
-      // if(response.data?.user?.accountType === "Student"){
-      //   navigate("/dashboard/recentjob");}
-      //   else if(response.data?.user?.accountType === "Coordinator"){
-      //     navigate("/dashboard/overview");
-      //   }
+      // navigate("/dashboard/userDashboard")
+      if(response.data?.user?.accountType === "USER"){
+        navigate("/dashboard/userDashboard");}
+        else if(response.data?.user?.accountType === "OWNER"){
+          navigate("/dashboard/ownerDashboard");
+        }
     } catch (error) {
       console.log("LOGIN API ERROR............", error);
       toast.error("Login Failed");}
