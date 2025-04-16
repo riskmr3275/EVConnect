@@ -80,6 +80,7 @@ class StationController {
     // Get stations by location (latitude and longitude)
     async getStationsByLocation(req, res) {
         try {
+            console.log("Request body:", req.body);
             const { latitude, longitude, radius } = req.body;
             if (!latitude || !longitude || !radius) {
                 return res.status(400).json({ message: 'Latitude, longitude, and radius are required' });

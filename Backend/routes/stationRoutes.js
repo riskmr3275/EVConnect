@@ -10,7 +10,7 @@ router.get('/getAllStations',getAllStations);
 router.get('/getStationById/:id',getStationById);
 router.post('/updateStation/:id',auth,isOwner,updateStation);
 router.delete('/deleteStation/:id',auth,isOwner,deleteStation);
-router.get('/getStationByLocation',getStationsByLocation);
+router.post('/getStationByLocation',getStationsByLocation);
 
 
 module.exports = router;

@@ -6,6 +6,7 @@ import { stationEndpoints } from '../../services/api';
 
 export default function EVChargingStationFinder() {
   const token = useSelector((state) => state.auth.token);
+
   const { GET_STATION_BY_LOCATION } = stationEndpoints;
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -37,17 +38,18 @@ export default function EVChargingStationFinder() {
       async (position) => {
         const { latitude, longitude } = position.coords;
         try {
-          const response = await axios.get(
+          console.log(`Fetching stations near lat: ${latitude}, long: ${longitude}`);
+          const response = await axios.post(
             GET_STATION_BY_LOCATION,
             {
-              latitude,
-              longitude,
-              radius: 50,
+              latitude: latitude,
+              longitude: longitude,
+              radius: 50000,
             }
           );
 
-          const fetchedStations = response.data.stations || []; // Make sure this matches your backend structure
-
+          const fetchedStations = response.data.data || []; // Make sure this matches your backend structure
+          console.log(fetchedStations)
           setStations(fetchedStations);
           setDisplayedStations(fetchedStations);
           setHasSearched(true);
@@ -135,7 +137,7 @@ export default function EVChargingStationFinder() {
 
             <div className="flex items-center text-gray-600 mb-2">
               <Clock size={16} className="mr-1" />
-              <span>{station.hours}</span>
+              <span>{station.companyName}</span>
             </div>
 
             <div className="text-gray-600 mb-3">{station.rate}</div>
