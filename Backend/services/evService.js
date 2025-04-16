@@ -7,7 +7,8 @@ const evService = {
     // Create a new EV
     async createEV(data) {
         try {
-            const newEV = await prismaClient.EV.create({
+            console.log("Creating EV with data:", data);
+            const newEV = await prisma.EV.create({
                 data: {
                     userId: data.user.userId,
                     brand: data.brand,
