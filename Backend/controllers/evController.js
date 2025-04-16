@@ -21,7 +21,7 @@ class EVController {
 
             return res.status(201).json({ message: 'EV created successfully', data: newEV });
         } catch (error) {
-            return res.status(400).json({ success: false, message: error.message });
+            return res.status(400).json({ success1: false, message: error.message });
         }
     }
 

@@ -14,7 +14,7 @@ const evService = {
                     brand: data.brand,
                     model: data.model,
                     licensePlate: data.licensePlate,
-                    batteryCapacity: data.batteryCapacity,
+                    batteryCapacity: Number(data.batteryCapacity),
                     preferredAcPort: data.preferredAcPort || null,
                     preferredDcPort: data.preferredDcPort || null,
                     isDefault: data.isDefault || true,
