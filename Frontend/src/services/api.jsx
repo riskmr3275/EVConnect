@@ -42,3 +42,10 @@ export const bookingEndpoints = {
 export const adminEndpoints = {
   DASHBOARD_DATA_API: BASE_URL + "/admin/dashboard",      // Admin analytics
 }
+
+
+// ====================== ADMIN DASHBOARD ======================
+export const evEndpoints = {
+  ADD_EV_API: BASE_URL + "/evs/addEV",      // Admin analytics
+  GET_EV_API: BASE_URL + "/evs/getEV",      // Admin analytics
+}
