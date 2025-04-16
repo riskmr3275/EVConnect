@@ -12,6 +12,7 @@ import MyBookings from './components/UserFiles/MyBookings';
 import Settings from './components/UserFiles/Settings';
 import OwnDashboardPage from './components/OwnerDash/OwnDashboardPage';
 import EVStationsPage from './components/OwnerDash/EVStationsPage';
+import EVChargingStationFinder from './components/UserFiles/EVChargingStationFinder';
 function App() {
    
 
@@ -36,7 +37,8 @@ function App() {
              <Route path="/dashboard/addCv" element={<MyBookings />} />
               <Route path="dashboard/settings" element={<Settings />} />  
               <Route path="dashboard/ownerDashboard" element={<OwnDashboardPage />} />  
-              <Route path="dashboard/station" element={<EVStationsPage />} />  
+              <Route path="dashboard/station" element={<EVStationsPage />} /> 
+              <Route path="dashboard/find" element={<EVChargingStationFinder />} />  
             </Route>
 
             </Routes>

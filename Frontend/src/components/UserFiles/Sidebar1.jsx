@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LogOut, Calendar, Home, Settings, Car, BarChart2, Users, DollarSign, ClipboardList } from 'lucide-react';
+import { LogOut, Search, Calendar, Home, Settings, Car, BarChart2, Users, DollarSign, ClipboardList } from 'lucide-react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom'; // For navigating between routes
 import {logout} from "../../services/operations/authAPI"
@@ -41,6 +41,7 @@ const Sidebar1 = () => {
 
     if (user.accountType === 'USER') {
       tabs = [
+        { name: 'findev', label: 'Find', icon: <Search className="mr-3" size={18} />, route: '/dashboard/find' },
         { name: 'dashboard', label: 'Dashboard', icon: <Home className="mr-3" size={18} />, route: '/dashboard/userDashboard' },
         { name: 'mybookings', label: 'My Bookings', icon: <Calendar className="mr-3" size={18} />, route: '/dashboard/addCv' },
         { name: 'addev', label: 'Add Your EV', icon: <Car className="mr-3" size={18} />, route: '/dashboard/Booking' },

@@ -49,3 +49,8 @@ export const evEndpoints = {
   ADD_EV_API: BASE_URL + "/evs/addEV",      // Admin analytics
   GET_EV_API: BASE_URL + "/evs/getEV",      // Admin analytics
 }
+
+// ====================== ADMIN DASHBOARD ======================
+export const stationEndpoints = {
+  GET_STATION_BY_LOCATION: BASE_URL + "/stations/getStationByLocation",      
+}
