@@ -16,20 +16,46 @@ export default function EVChargingStationFinder() {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
     if (searchQuery.trim() === '') {
       setDisplayedStations([]);
       setHasSearched(false);
-    } else {
-      const filtered = stations.filter(
-        (station) =>
-          station.address.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          station.name.toLowerCase().includes(searchQuery.toLowerCase())
+      return;
+    }
+  
+    setLoading(true);
+    setErrorMessage('');
+  
+    try {
+      // Optional: You can use this if you want to validate the location
+      const response1 = await axios.get(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${searchQuery}`
       );
-      setDisplayedStations(filtered);
+      // console.log("Geocode response:", response1.data[0]);
+      const { lat, lon } = response1.data[0];
+      const response = await axios.post(
+        GET_STATION_BY_LOCATION,
+        {
+          latitude: Number(lat),
+          longitude: Number(lon),
+          radius: 100,
+        }
+      );
+  
+      const fetchedStations = response.data.data || [];
+      console.log("Stations:", fetchedStations);
+  
+      setStations(fetchedStations);
+      setDisplayedStations(fetchedStations);
       setHasSearched(true);
+    } catch (err) {
+      console.error('Error fetching stations:', err);
+      setErrorMessage('Failed to fetch stations.');
+    } finally {
+      setLoading(false);
     }
   };
+  
 
   const handleCurrentLocation = () => {
     setLoading(true);
@@ -44,7 +70,7 @@ export default function EVChargingStationFinder() {
             {
               latitude: latitude,
               longitude: longitude,
-              radius: 50000,
+              radius: 100,
             }
           );
 
