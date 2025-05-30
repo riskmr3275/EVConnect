@@ -61,7 +61,7 @@ exports.isAdmin = (req, res, next) => {
 
 exports.isStationMaster = (req, res, next) => {
   try{
-    if(req.user.accountType !== "STATIONMASTER"){
+    if(req.user.accountType !== "STATIONMASTER" ){
       return res.status(401).json({ success: false, message: "User is not STATIONMASTER" });
     }
     next();

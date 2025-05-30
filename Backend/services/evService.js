@@ -1,9 +1,8 @@
-const  prisma  = require("../config/database");
-
+const prisma = require("../config/database");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
-const evService = {
+class EVService {
     // Create a new EV
     async createEV(data) {
         try {
@@ -22,9 +21,9 @@ const evService = {
             });
             return newEV;
         } catch (error) {
-            throw new Error('Error creating EV: ' + error.message)
+            throw new Error('Error creating EV: ' + error.message);
         }
-    },
+    }
 
     // Get all EVs for a user
     async getEV(userId) {
@@ -36,7 +35,7 @@ const evService = {
         } catch (error) {
             throw new Error('Error retrieving EVs: ' + error.message);
         }
-    },
+    }
 
     // Get EV by ID
     async getEVById(id) {
@@ -48,7 +47,7 @@ const evService = {
         } catch (error) {
             throw new Error('Error retrieving EV: ' + error.message);
         }
-    },
+    }
 
     // Update EV by ID
     async updateEV(id, updateData) {
@@ -61,7 +60,7 @@ const evService = {
         } catch (error) {
             throw new Error('Error updating EV: ' + error.message);
         }
-    },
+    }
 
     // Delete EV by ID
     async deleteEV(id) {
@@ -73,7 +72,7 @@ const evService = {
         } catch (error) {
             throw new Error('Error deleting EV: ' + error.message);
         }
-    },
-};
+    }
+}
 
-module.exports = evService;
+module.exports = new EVService();

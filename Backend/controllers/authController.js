@@ -28,9 +28,10 @@ class AuthController {
   // Login a user
   async loginUser(req, res) {
     try {
+      
       const { email, password } = req.body;
       const { user, token } = await authService.loginUser(email, password);
-
+      
       return res
         .cookie("token", token, {
           expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),

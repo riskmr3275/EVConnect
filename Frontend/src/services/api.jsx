@@ -23,10 +23,10 @@ export const userEndpoints = {
 
 // ====================== SLOT ENDPOINTS ======================
 export const slotEndpoints = {
-  CREATE_SLOT_API: BASE_URL + "/slots",            // Admin: Create a new slot
-  GET_ALL_SLOTS_API: BASE_URL + "/slots",          // Get all available slots
-  UPDATE_SLOT_API: BASE_URL + "/slots/",           // + slotId - Update a slot
-  DELETE_SLOT_API: BASE_URL + "/slots/",           // + slotId - Delete a slot
+  CREATE_SLOT_API: BASE_URL + "/chargingSlots/addChargingSlot",            
+  GET_ALL_SLOTS_API: BASE_URL + "/chargingSlots/getChargingSlots/:stationId",  //get all charging slot of a station        
+  UPDATE_SLOT_API: BASE_URL + "/chargingSlots/",         // not done 
+  DELETE_SLOT_API: BASE_URL + "/chargingSlots/",           // not done
 }
 
 // ====================== BOOKING ENDPOINTS ======================
@@ -46,8 +46,9 @@ export const adminEndpoints = {
 
 // ====================== ADMIN DASHBOARD ======================
 export const evEndpoints = {
-  ADD_EV_API: BASE_URL + "/evs/addEV",      // Admin analytics
-  GET_EV_API: BASE_URL + "/evs/getEV",      // Admin analytics
+  ADD_EV_API: BASE_URL + "/evs/addEV",      
+  GET_EV_API: BASE_URL + "/evs/getEV",      
+  GET_EV_BY_ID: BASE_URL + "/evs/getEVById/:id",
 }
 
 // ====================== ADMIN DASHBOARD ======================
