@@ -10,13 +10,14 @@ const Test1 = () => {
   const {ADD_EV_API,GET_EV_API} = evEndpoints;
   const [evs,setEvs] = useState([]);
   useEffect(() => {
+    
     const fetchEvDetails = async () => {
       try {
-        const response = await axios.get(GET_EV_API, {
+        const response = await axios.get(GET_EV_API,  {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        });
+        },);
         setEvs(response.data.data); // If API returns newly added EV
         console.log('EV Data:', evs);
       } catch (error) {

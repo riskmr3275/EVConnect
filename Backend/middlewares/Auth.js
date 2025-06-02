@@ -6,7 +6,7 @@ dotenv.config();
 
 exports.auth = async (req, res, next) => {
   try {
-    console.log("Hello i m from auth middleware");
+    console.log("Hello i m from auth middleware",req.cookies);
     const token = req.cookies.token || req.body.token || req.header("authorization")?.replace("Bearer ", "");
     console.log("Token in auth::", token);
     

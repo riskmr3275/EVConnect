@@ -31,13 +31,16 @@ class AuthController {
       
       const { email, password } = req.body;
       const { user, token } = await authService.loginUser(email, password);
-      
+
       return res
         .cookie("token", token, {
           expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
           httpOnly: true,
+          secure: false,
+          sameSite: "Lax",
         })
-        .status(200)
+       // Set the token in the response header
+        return res.status(200)
         .json({
           message: "Login successful",
           user,

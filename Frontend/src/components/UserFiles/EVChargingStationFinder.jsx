@@ -77,6 +77,7 @@ export default function EVChargingStationFinder() {
           const fetchedStations = response.data.data || []; // Make sure this matches your backend structure
           console.log(fetchedStations)
           setStations(fetchedStations);
+          setSearchQuery("")
           setDisplayedStations(fetchedStations);
           setHasSearched(true);
           setLoading(false);
