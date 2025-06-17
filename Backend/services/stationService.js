@@ -23,8 +23,8 @@ class StationService {
         ownerType,
         ownerId: user.userId,
         address,
-        latitude,
-        longitude,
+        latitude: parseFloat(latitude),     // <-- convert to number
+        longitude: parseFloat(longitude),
         totalSlots,
         availableSlots: totalSlots,
         contact,

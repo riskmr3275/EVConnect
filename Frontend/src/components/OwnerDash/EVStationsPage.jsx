@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Home, Users, FileText, PieChart, Settings, LogOut, ChevronRight, Plus, MoreHorizontal, Search, Filter, Download, RefreshCw, AlertTriangle } from 'lucide-react';
+import { addingStation } from '../../services/operations/OwnerApi';
+import { useDispatch,useSelector } from "react-redux";
 
 // Sample data for the stations
 const stationsData = [
@@ -13,13 +15,15 @@ const stationsData = [
 ];
 
 export default function EVStationsPage() {
+  const dispatch = useDispatch();
+  const { token } = useSelector((state) => state.auth);
   const [stations, setStations] = useState(stationsData);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
   const [showAddStationModal, setShowAddStationModal] = useState(false);
   const [newStation, setNewStation] = useState({
     location: '',
-    ports: '',
+    totalSlots: '',
     stationMaster: ''
   });
 
@@ -62,6 +66,8 @@ export default function EVStationsPage() {
     };
     setStations([...stations, station]);
     setNewStation({ location: '', ports: '', stationMaster: '' });
+    console.log("object from adding station",station)
+    dispatch(addingStation(station,token)); // Redux call
     setShowAddStationModal(false);
   };
 
@@ -73,9 +79,6 @@ export default function EVStationsPage() {
       <div className="flex-1 overflow-auto">
         {/* Top navigation */}
         <div className="bg-black p-4 border-b border-gray-800 flex items-center justify-between">
-              
-          
-          
         </div>
         
         {/* Stations content */}
@@ -199,11 +202,11 @@ export default function EVStationsPage() {
       
       {/* Add Station Modal */}
       {showAddStationModal && (
-  <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 w-full">
-    <div className="bg-black border border-white/20 rounded-xl p-6 w-[30rem] max-h-[90vh] overflow-y-auto shadow-2xl">
-      <h2 className="text-xl font-semibold text-white mb-6">Add New EV Station</h2>
+       <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 w-full">
+       <div className="bg-black border border-white/20 rounded-xl p-6 w-[30rem] max-h-[90vh] overflow-y-auto shadow-2xl">
+       <h2 className="text-xl font-semibold text-white mb-6">Add New EV Station</h2>
 
-      <div className="space-y-4 text-white">
+       <div className="space-y-4 text-white">
         <div>
           <label className="block text-sm font-medium mb-1">Station Name</label>
           <input
@@ -236,6 +239,17 @@ export default function EVStationsPage() {
             <option value="INDIVIDUAL">INDIVIDUAL</option>
             <option value="COMPANY">COMPANY</option>
           </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-1">Total Slots</label>
+          <input
+            type="number"
+            className="w-full bg-black border border-white/30 rounded-md px-3 py-2 text-sm placeholder-white/50"
+            value={newStation.totalSlots || ''}
+            onChange={(e) => setNewStation({ ...newStation, totalSlots: Number(e.target.value) })}
+            placeholder="e.g. 989"
+          />
         </div>
 
         <div>
@@ -301,7 +315,7 @@ export default function EVStationsPage() {
               type="number"
               className="w-full bg-black border border-white/30 rounded-md px-3 py-2 text-sm placeholder-white/50"
               value={newStation.latitude || ''}
-              onChange={(e) => setNewStation({ ...newStation, latitude: e.target.value })}
+              onChange={(e) => setNewStation({ ...newStation, latitude: parseFloat(e.target.value) })}
               placeholder="e.g. 23.3449"
             />
           </div>
@@ -311,7 +325,7 @@ export default function EVStationsPage() {
               type="number"
               className="w-full bg-black border border-white/30 rounded-md px-3 py-2 text-sm placeholder-white/50"
               value={newStation.longitude || ''}
-              onChange={(e) => setNewStation({ ...newStation, longitude: e.target.value })}
+              onChange={(e) => setNewStation({ ...newStation, longitude: parseFloat(e.target.value) })}
               placeholder="e.g. 85.3096"
             />
           </div>

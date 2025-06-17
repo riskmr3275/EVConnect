@@ -26,30 +26,32 @@ class AuthController {
   }
 
   // Login a user
-  async loginUser(req, res) {
-    try {
-      
-      const { email, password } = req.body;
-      const { user, token } = await authService.loginUser(email, password);
+async loginUser(req, res) {
+  try {
+    const { email, password } = req.body;
+    const { user, token } = await authService.loginUser(email, password);
 
-      return res
-        .cookie("token", token, {
-          expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-          httpOnly: true,
-          secure: false,
-          sameSite: "Lax",
-        })
-       // Set the token in the response header
-        return res.status(200)
-        .json({
-          message: "Login successful",
-          user,
-          token,
-        });
-    } catch (error) {
-      return res.status(400).json({ success:false,message: error.message });
-    }
+    // Set the token in the cookie
+    res.cookie("token", token, {
+      expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
+      httpOnly: true,
+      secure: false, // Set to true if using HTTPS
+      sameSite: "Lax",
+    });
+
+    // Set the token in the response header (optional)
+    res.setHeader("Authorization", `Bearer ${token}`);
+
+    // Send response
+    return res.status(200).json({
+      message: "Login successful",
+      user,
+      token,
+    });
+  } catch (error) {
+    return res.status(400).json({ success: false, message: error.message });
   }
+}
 
   // Forgot password
   async forgotPassword(req, res) {

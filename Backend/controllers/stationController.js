@@ -5,7 +5,7 @@ class StationController {
     async createStation(req, res) {
         try {
             const { name, companyName, ownerType, address, latitude, longitude, totalSlots, contact } = req.body;
-            // console.log("Request body:", req.user);
+            console.log("Request body:", req.body);
             const newStation = await stationService.createStation({
                 name,
                 companyName,
@@ -18,9 +18,9 @@ class StationController {
                 contact,
                 user:req.user
             });
-            return res.status(201).json({ message: 'Station created successfully', data: newStation });
+            return res.status(201).json({ success:true,message: 'Station created successfully', data: newStation });
         } catch (error) {
-            return res.status(400).json({ sucess:false,message: error.message });
+            return res.status(400).json({ success:false,message: error.message });
         }
     }
 

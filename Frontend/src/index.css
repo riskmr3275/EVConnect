@@ -1,4 +1,7 @@
 @import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 .loader {
     width: 48px;
@@ -19,3 +22,5 @@
         transform: rotate(360deg);
     }
     } 
+
+

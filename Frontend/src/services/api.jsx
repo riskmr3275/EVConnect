@@ -53,7 +53,11 @@ export const evEndpoints = {
 
 // ====================== ADMIN DASHBOARD ======================
 export const stationEndpoints = {
-  GET_STATION_BY_LOCATION: BASE_URL + "/stations/getStationByLocation",      
+  GET_STATION_BY_LOCATION: BASE_URL + "/stations/getStationByLocation",   
+  ADD_STATION: BASE_URL + "/stations/addStation",   
 }
 
  
+
+ 
+
