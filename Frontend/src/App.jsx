@@ -18,6 +18,7 @@ import EmployeePage from './components/OwnerDash/EmployeePage';
 import StationDashboard from './components/StationMaster/StationDashboard';
 import ChargerMonitoring from './components/StationMaster/ChargerMonitoring';
 import StationProfile from './components/StationMaster/StationProfile';
+import EVAccessLogs from './components/StationMaster/EVAccessLogs';
 function App() {
    
 
@@ -50,6 +51,7 @@ function App() {
               <Route path="dashboard/stationMasterDashboard" element={<StationDashboard />} />
               <Route path="dashboard/monitor" element={<ChargerMonitoring />} />
               <Route path="/dashboard/stationprofile" element={<StationProfile/>} />
+              <Route path="/dashboard/accesslogs" element={<EVAccessLogs/>} />
 
             </Route>
 

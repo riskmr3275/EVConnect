@@ -58,10 +58,11 @@ const Sidebar1 = () => {
       ];
     } else if (user.accountType === 'STATIONMASTER') {
       tabs = [
-        { name: 'dashboard', label: 'Station Master Dashboard', icon: <Home className="mr-3" size={18} />, route: '/dashboard/stationMasterDashboard' },
-        { name: 'manageStation', label: 'Manage Station', icon: <ClipboardList className="mr-3" size={18} />, route: '/dashboard/manageStation' },
-        { name: 'monitorcharger', label: 'Monitor Chargers', icon: <ClipboardList className="mr-3" size={18} />, route: '/dashboard/monitor' },
+        { name: 'dashboard', label: 'Master Dashboard', icon: <Home className="mr-3" size={18} />, route: '/dashboard/stationMasterDashboard' },
+         { name: 'monitorcharger', label: 'Monitor Chargers', icon: <ClipboardList className="mr-3" size={18} />, route: '/dashboard/monitor' },
         { name: 'stationprofile', label: 'Station Profile', icon: <ClipboardList className="mr-3" size={18} />, route: '/dashboard/stationprofile' },
+        { name: 'accesslogs', label: 'Access Logs', icon: <ClipboardList className="mr-3" size={18} />, route: '/dashboard/accesslogs' },
+
         { name: 'supportTickets', label: 'Support Tickets', icon: <Users className="mr-3" size={18} />, route: '/dashboard/supportTickets' },
         ...commonTabs,
       ];
@@ -82,7 +83,7 @@ const Sidebar1 = () => {
             <ul className="space-y-2 p-2 rounded-2xl h-full">
               {tabs?.map((tab) => (
                 <li key={tab.name}>
-                  <button
+                  <button className="cursor-pointer"
                     onClick={() => {
                       if (tab.name === 'logout') {
                         console.log('Logout clicked');
