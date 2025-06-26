@@ -3,7 +3,7 @@ import { setToken } from "../../slices/authSlice";
 import { toast } from "react-toastify";
 import { setUser,setLoading } from "../../slices/profileSlice";
 import { apiConnector } from "../apiconnector";
-import { stationEndpoints  } from "../api";
+import { stationEndpoints,stationMasterEndpoints  } from "../api";
  
 const {
   ADD_STATION
@@ -58,6 +58,44 @@ export function addingStation(station,token) {
       } catch (error) {
         console.log("Adding Station ERROR............", error);
         toast.error("Adding Station Failed");
+        dispatch(setLoading(false));
+      }
+      dispatch(setLoading(false));
+      toast.dismiss(toastId);
+    };
+  }
+
+
+
+  export function addEmployees(newEmployee,token) {
+    return async (dispatch) => {
+      const toastId = toast.loading("Loading...");
+      dispatch(setLoading(true));
+      newEmployee.accountType="STATIONMASTER";
+      newEmployee.dateOfBirth=new Date(newEmployee.dateOfBirth);
+      console.log("object  from Add Employee",newEmployee)
+      try {
+        const response = await apiConnector(
+            "POST",
+            stationMasterEndpoints.STATIONMASTER_REGISTER_API,
+           newEmployee,
+            {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json", // optional but good to include
+            }
+          ).catch((error) => console.log("error from frontend", error));
+          
+        console.log("Adding EMployees API RESPONSE............", response);
+  
+        if (!response.data.success) {
+          throw new Error(response.data.message);
+         
+        }
+        toast.success("Employee Added");
+        
+      } catch (error) {
+        console.log("Adding Employee ERROR............", error.message);
+        toast.error("Adding Employee Failed");
         dispatch(setLoading(false));
       }
       dispatch(setLoading(false));

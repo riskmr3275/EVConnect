@@ -60,6 +60,8 @@ const Sidebar1 = () => {
       tabs = [
         { name: 'dashboard', label: 'Station Master Dashboard', icon: <Home className="mr-3" size={18} />, route: '/dashboard/stationMasterDashboard' },
         { name: 'manageStation', label: 'Manage Station', icon: <ClipboardList className="mr-3" size={18} />, route: '/dashboard/manageStation' },
+        { name: 'monitorcharger', label: 'Monitor Chargers', icon: <ClipboardList className="mr-3" size={18} />, route: '/dashboard/monitor' },
+        { name: 'stationprofile', label: 'Station Profile', icon: <ClipboardList className="mr-3" size={18} />, route: '/dashboard/stationprofile' },
         { name: 'supportTickets', label: 'Support Tickets', icon: <Users className="mr-3" size={18} />, route: '/dashboard/supportTickets' },
         ...commonTabs,
       ];

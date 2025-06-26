@@ -92,6 +92,9 @@ export function login(email, password, navigate) {
         navigate("/dashboard/userDashboard");}
         else if(response.data?.user?.accountType === "OWNER"){
           navigate("/dashboard/ownerDashboard");
+        }else if(response.data?.user?.accountType === "STATIONMASTER")
+        {
+          navigate("/dashboard/stationMasterDashboard");
         }
     } catch (error) {
       console.log("LOGIN API ERROR............", error);

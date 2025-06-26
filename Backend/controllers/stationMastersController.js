@@ -3,11 +3,11 @@ const stationMasterService = require('../services/stationMasterServices');
 class StationMasterController{
     async createStationMaster(req,res){
         try{
-            const {name,email,password,contactNumber,accountType,gender,dateOfBirth,stationId,shift} = req.body;
+            const {name,email,setPassword,contactNumber,accountType,gender,dateOfBirth,stationId,shift} = req.body;
             const stationMaster= await stationMasterService.createStationMaster({
                 name,
                 email,
-                password,
+                password:setPassword,
                 contactNumber,
                 accountType,
                 gender,
@@ -16,10 +16,10 @@ class StationMasterController{
                 shift,
                 user:req.user,
             })
-            return res.status(201).json({message:"Station Master Created Successfully",stationMaster});
+            return res.status(201).json({message:"Station Master Created Successfully",stationMaster,success:true});
         }
         catch(error){
-            return res.status(400).json({message:error.message});
+            return res.status(400).json({success:false,message:error.message});
         }
     }
 
