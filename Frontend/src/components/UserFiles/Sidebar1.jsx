@@ -83,7 +83,7 @@ const Sidebar1 = () => {
             <ul className="space-y-2 p-2 rounded-2xl h-full">
               {tabs?.map((tab) => (
                 <li key={tab.name}>
-                  <button className="cursor-pointer"
+                  <button
                     onClick={() => {
                       if (tab.name === 'logout') {
                         console.log('Logout clicked');
@@ -94,7 +94,7 @@ const Sidebar1 = () => {
                         navigate(tab.route); // Navigate to the selected route
                       }
                     }}
-                    className={`flex items-center w-full py-2 px-4 rounded-lg ${tab.name === activeTab ? 'bg-white text-black' : tab.special ? 'text-red-600 hover:cursor-pointer hover:text-red-900' : 'text-gray-300 hover:bg-gray-500 hover:cursor-pointer '}`}
+                    className={`cursor-pointer flex items-center w-full py-2 px-4 rounded-lg ${tab.name === activeTab ? 'bg-white text-black' : tab.special ? 'text-red-600 hover:cursor-pointer hover:text-red-900' : 'text-gray-300 hover:bg-gray-500 hover:cursor-pointer '}`}
                   >
                     {tab.icon}
                     {tab.label}
