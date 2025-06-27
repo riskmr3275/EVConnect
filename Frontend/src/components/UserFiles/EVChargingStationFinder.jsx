@@ -3,8 +3,11 @@ import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { Search, Clock, MapPin, ExternalLink } from 'lucide-react';
 import { stationEndpoints } from '../../services/api';
+import { useNavigate } from 'react-router-dom';
 
 export default function EVChargingStationFinder() {
+  const navigate = useNavigate();
+
   const token = useSelector((state) => state.auth.token);
 
   const { GET_STATION_BY_LOCATION } = stationEndpoints;
@@ -16,6 +19,13 @@ export default function EVChargingStationFinder() {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
+  const handleBookSlot = (stationId) => {
+    navigate(`/u/book-slot/${stationId}`); // using URL param
+  };
+  
+  const handleDirection = (latitude,longitude) => {
+    navigate(`/u/get-direction?lat=${latitude}&lng=${longitude}`);
+  };
   const handleSearch = async () => {
     if (searchQuery.trim() === '') {
       setDisplayedStations([]);
@@ -169,13 +179,18 @@ export default function EVChargingStationFinder() {
 
             <div className="text-gray-600 mb-3">{station.rate}</div>
 
-            <a
-              href="#"
-              className="inline-flex items-center bg-blue-800 text-white hover:bg-blue-600 p-3 rounded-sm transition-colors"
+           <div className='flex flex-row gap-4 py-3'>
+           <button
+             onClick={() => handleDirection(station.latitude,station.longitude)}
+              className="inline-flex items-center bg-blue-800 text-white hover:bg-blue-600 p-3 rounded-sm transition-colors cursor-pointer"
             >
               <ExternalLink size={16} className="mr-1" />
               Get Direction
-            </a>
+            </button>
+            <div
+             className='inline-flex items-center bg-blue-800 text-white hover:bg-blue-600 p-3 rounded-sm transition-colors cursor-pointer font-semibold'>
+              <button onClick={() => handleBookSlot(station.id)} className='cursor-pointer'>Book Slot</button></div>
+           </div>
           </div>
         ))}
       </div>

@@ -89,7 +89,7 @@ export function login(email, password, navigate) {
       localStorage.setItem("user", JSON.stringify(response.data.user));
       // navigate("/dashboard/userDashboard")
       if(response.data?.user?.accountType === "USER"){
-        navigate("/dashboard/userDashboard");}
+        navigate("/dashboard/find");}
         else if(response.data?.user?.accountType === "OWNER"){
           navigate("/dashboard/ownerDashboard");
         }else if(response.data?.user?.accountType === "STATIONMASTER")
