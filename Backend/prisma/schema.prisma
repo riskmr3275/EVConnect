@@ -43,7 +43,12 @@ enum BookingStatus {
   PENDING
   CONFIRMED
   CANCELLED
+  CHARGING
+  CHARGING_DONE
+ 
 }
+
+ 
 
 enum OwnerType {
   COMPANY
