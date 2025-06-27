@@ -77,7 +77,7 @@ const Sidebar1 = () => {
   return (
     <>
       {/* Desktop Sidebar */}
-      <div className={`${sidebarClass} w-80 flex-shrink-0 hidden md:block h-full border-r-1 border-white`}>
+      <div className={`${sidebarClass} w-80 flex-shrink-0 hidden md:block h-full border-r-1 border-white overflow-x-hidden`}>
         <div className="p-4">
           <nav>
             <ul className="space-y-2 p-2 rounded-2xl h-full">

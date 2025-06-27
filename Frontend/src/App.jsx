@@ -26,7 +26,7 @@ function App() {
 
   return (
     <>
-       <div className="min-h-screen bg-white">
+       <div className="min-h-full bg-white w-full overflow-visible ">
             <Navbar/> 
             <Routes>
               <Route path="/" element={<Homepage />} />

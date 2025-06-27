@@ -189,7 +189,7 @@ export default function EVChargingStationFinder() {
             </button>
             <div
              className='inline-flex items-center bg-blue-800 text-white hover:bg-blue-600 p-3 rounded-sm transition-colors cursor-pointer font-semibold'>
-              <button onClick={() => handleBookSlot(station.id)} className='cursor-pointer'>Book Slot</button></div>
+              <button onClick={() => handleBookSlot(station.id)} className='cursor-pointer'>Check Availability</button></div>
            </div>
           </div>
         ))}

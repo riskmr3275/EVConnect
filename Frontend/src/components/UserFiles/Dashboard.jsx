@@ -18,14 +18,41 @@ const Dashboard = () => {
     setDarkMode(!darkMode);
   };
   return (
-    <div className={`flex h-screen ${mainContentClass}`}>
-     <div className="flex-1 flex flex-row overflow-hidden">
-         {/* Sidebar */}
-      <Sidebar1/>
-      <Outlet/>
-     </div>
+    <div className={`flex min-h-screen h-auto ${mainContentClass} overflow-y-auto w-full`}>
+      <div className={`flex h-screen ${mainContentClass} w-full`}>
+  {/* Sidebar — fixed height, no scroll */}
+  <Sidebar1 />
+
+  {/* Main Content — scrollable */}
+  <div className="flex-1 overflow-y-auto w-full">
+    <Outlet />
+  </div>
+</div>
+
     </div>
   );
 };
 
 export default Dashboard;
+
+
+
+
+// const Dashboard = () => {
+//   const [darkMode, setDarkMode] = useState(false);
+//   const mainContentClass = darkMode ? 'bg-gray-900 text-white' : 'bg-gray-50';
+
+//   return (
+//     <div className={`flex min-h-screen h-auto ${mainContentClass} overflow-y-auto`}>
+//       <div className="flex-1 flex flex-row overflow-hidden">
+//         {/* Sidebar */}
+//         <Sidebar1 />
+        
+//         {/* Main Content */}
+//         <div className="flex-1 overflow-y-auto">
+//           <Outlet />
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };

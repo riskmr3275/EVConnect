@@ -156,15 +156,17 @@ const UberLoginPage = () => {
               </div>
             )}
 
-            <Button 
+           <div className='cursor-pointer'>
+           <Button 
               type="submit" 
-              className="w-full mt-4 cursor-pointer"
+              className="w-full mt-4"
             >
               {user?.loading ? (
-                              <span className="loader cursor-pointer"></span>
+                              <span className="loader "></span>
                             ) : isLogin ? 'Login In' : 'Sign Up'}
               
             </Button>
+           </div>
           </form>
 
           <div className="mt-6 text-center">

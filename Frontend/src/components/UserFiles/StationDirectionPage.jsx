@@ -20,7 +20,7 @@ function StationDirectionPage() {
       <p className="text-gray-700">Latitude: {latitude}</p>
       <p className="text-gray-700">Longitude: {longitude}</p>
     </div>
-      {/* <LiveMap destination={destination} /> */}
+      <LiveMap destination={destination} />
     </div>
   );
 }
