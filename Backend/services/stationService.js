@@ -47,7 +47,7 @@ class StationService {
   // Get a station by ID
   async getStationById(id) {
     const station = await prisma.station.findUnique({
-      where: { id: Number(id) },
+      where: { id: id },
     });
     return station;
   }

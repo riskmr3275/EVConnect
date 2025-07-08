@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Star, MapPin, Clock, Zap, Car, Filter, Heart, QrCode, AlertCircle, CheckCircle, X, Phone, Wifi, Coffee, Shield, CreditCard } from 'lucide-react';
+import { useParams } from 'react-router-dom';
 
+import { Star, MapPin, Clock, Zap, Car, Filter, Heart, QrCode, AlertCircle, CheckCircle, X, Phone, Wifi, Coffee, Shield, CreditCard } from 'lucide-react';
+import { apiConnector } from '../../services/apiconnector';
+import { stationEndpoints } from '../../services/api';
 const BookSlotPage = () => {
   const [currentView, setCurrentView] = useState('stations'); // stations, booking, confirmation, waitlist
   const [selectedStation, setSelectedStation] = useState(null);
@@ -49,6 +52,30 @@ const BookSlotPage = () => {
       ]
     }
   ];
+  const { stationId } = useParams();
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    console.log("Hello woedl")
+    if (!stationId) return;
+    console.log("Hello woedl")
+    const fetchData = async () => {
+      try {
+        const url = stationEndpoints.GET_STATION_BY_ID.replace(':id', stationId);
+        const response = await apiConnector("GET", url);
+        setData(response.data.data);
+      } catch (err) {
+        setError(err.message || "Something went wrong");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [stationId]);
+console.log("object from bookslot page",data)
 
   // Timer countdown effect
   useEffect(() => {
@@ -73,7 +100,7 @@ const BookSlotPage = () => {
         : [...prev, stationId]
     );
   };
-
+ 
   const calculateCharging = () => {
     if (!selectedPort) return { time: 0, cost: 0 };
     
@@ -116,7 +143,7 @@ const BookSlotPage = () => {
       <div className="relative w-full overflow-visible">
         <img 
           src={station.image} 
-          alt={station.name} 
+          alt={data?.companyName} 
           className="w-full h-56 object-cover transition-transform duration-500 hover:scale-110" 
         />
         
@@ -165,7 +192,7 @@ const BookSlotPage = () => {
   
         {/* Station Name Overlay */}
         <div className="absolute bottom-4 left-4 right-4">
-          <h3 className="text-2xl font-bold text-white drop-shadow-lg">{station.name}</h3>
+          <h3 className="text-2xl font-bold text-white drop-shadow-lg">{data?.name}</h3>
         </div>
       </div>
       
@@ -180,10 +207,10 @@ const BookSlotPage = () => {
             </div>
             <span className="text-sm text-gray-600">({station.reviews} reviews)</span>
           </div>
-          <div className="text-right">
+          {/* <div className="text-right">
             <div className="text-2xl font-bold text-emerald-600">₹{station.pricePerUnit}</div>
             <div className="text-sm text-gray-500">per kWh</div>
-          </div>
+          </div> */}
         </div>
   
         {/* Location & Manager Info */}
@@ -191,7 +218,7 @@ const BookSlotPage = () => {
           <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-xl">
             <MapPin className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
             <div>
-              <p className="font-medium text-gray-900">{station.location}</p>
+              <p className="font-medium text-gray-900">{data?.address}</p>
               <p className="text-sm text-blue-600 font-medium">{station.distance} away</p>
             </div>
           </div>
@@ -203,7 +230,7 @@ const BookSlotPage = () => {
             <div>
               <p className="font-medium text-gray-900">Station Manager</p>
               <p className="text-sm text-gray-600">{station.manager}</p>
-              <p className="text-sm text-blue-600 font-medium">{station.phone}</p>
+              <p className="text-sm text-blue-600 font-medium">{data?.contact}</p>
             </div>
           </div>
         </div>
@@ -245,7 +272,7 @@ const BookSlotPage = () => {
           </h4>
           <div className="grid grid-cols-3 gap-4">
             <div className="text-center p-3 bg-white rounded-lg border border-emerald-200">
-              <div className="text-3xl font-bold text-emerald-600 mb-1">{station.availablePorts}</div>
+              <div className="text-3xl font-bold text-emerald-600 mb-1">{data?.availableSlots}</div>
               <div className="text-sm text-emerald-700 font-medium">Available</div>
               <div className="w-full bg-emerald-100 h-2 rounded-full mt-2">
                 <div 
@@ -256,7 +283,7 @@ const BookSlotPage = () => {
             </div>
             
             <div className="text-center p-3 bg-white rounded-lg border border-gray-200">
-              <div className="text-3xl font-bold text-gray-700 mb-1">{station.totalPorts}</div>
+              <div className="text-3xl font-bold text-gray-700 mb-1">{data?.totalSlots}</div>
               <div className="text-sm text-gray-600 font-medium">Total Ports</div>
               <div className="flex items-center justify-center mt-2 gap-1">
                 {Array.from({ length: Math.min(station.totalPorts, 8) }, (_, i) => (
@@ -267,7 +294,7 @@ const BookSlotPage = () => {
             </div>
             
             <div className="text-center p-3 bg-white rounded-lg border border-red-200">
-              <div className="text-3xl font-bold text-red-600 mb-1">{station.totalPorts - station.availablePorts}</div>
+              <div className="text-3xl font-bold text-red-600 mb-1">{data?.totalSlots - data?.availableSlots}</div>
               <div className="text-sm text-red-700 font-medium">In Use</div>
               <div className="w-full bg-red-100 h-2 rounded-full mt-2">
                 <div 
@@ -470,7 +497,9 @@ const BookSlotPage = () => {
 
   const ConfirmationScreen = () => (
     <div className="fixed inset-0 bg-black/80  bg-opacity-50 flex items-center justify-center p-4 z-50">
+      
       <div className="bg-white rounded-xl max-w-md w-full">
+      <div className="absolute  text-gray-500 font-bold  p-3"> <button onClick={() => setCurrentView('stations')} className='cursor-pointer p-2'>Done</button></div>
         <div className="p-6 text-center">
           <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <CheckCircle className="w-8 h-8 text-green-600" />
@@ -523,7 +552,7 @@ const BookSlotPage = () => {
               onClick={() => setCurrentView('stations')}
               className="w-full bg-blue-600 hover:bg-blue-700 cursor-pointer text-white py-3 px-4 rounded-lg font-medium transition-colors"
             >
-              Back to Stations
+              Done
             </button>
             <button className="w-full bg-gray-100 cursor-pointer hover:bg-gray-200 text-gray-700 py-3 px-4 rounded-lg font-medium transition-colors">
               Download Receipt

@@ -55,7 +55,8 @@ export const evEndpoints = {
 export const stationEndpoints = {
   GET_STATION_BY_LOCATION: BASE_URL + "/stations/getStationByLocation",   
   ADD_STATION: BASE_URL + "/stations/addStation",   
-  GET_ALL_STATION: BASE_URL + "/stations/getAllStations", 
+  GET_ALL_STATION: BASE_URL + "/stations/getAllStations",
+  GET_STATION_BY_ID: BASE_URL + "/stations/getStationById/:id",
 }
 
  
