@@ -1,4 +1,7 @@
-const BASE_URL ="http://localhost:4000/api" || "https://your-booking-backend.vercel.app/api/v1"; // Deployed booking backend base URL
+
+const BASE_URL =  "http://localhost:4000/api";
+// const BASE_URL = "/api";
+
 
 // ====================== AUTH ENDPOINTS ======================
 export const authEndpoints = {

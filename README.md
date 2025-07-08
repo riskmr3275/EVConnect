@@ -28,3 +28,7 @@ A complete **EV Charging Station Management System** that enables users to book 
 ---
 
 ## 📂 Project Structure
+
+Note: 
+lsof -i:PORT NUmber
+kill -9 PID
