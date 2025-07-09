@@ -22,7 +22,10 @@ server {
 }
 
 
+open this file:
+sudo nano etc/nginx/sites-availabe/default
 
+install pm2 for manager and run the server c
 
 sudo apt install certbot python3-certbot-nginx -y
 sudo certbot --nginx -d yourdomain.com -d www.yourdomain.com

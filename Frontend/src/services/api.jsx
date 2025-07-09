@@ -1,5 +1,5 @@
 
-const BASE_URL =  "http://localhost:4000/api";
+const BASE_URL =  "https://evconnect-1.onrender.com/api";
 // const BASE_URL = "/api";
 
 
