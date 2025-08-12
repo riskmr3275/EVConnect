@@ -11,8 +11,10 @@ class QRCodeService {
                 include: {
                     station: {
                         select: {
+                            id: true,
                             name: true,
-                            address: true
+                            address: true,
+                            contact: true
                         }
                     },
                     ev: {
@@ -24,14 +26,18 @@ class QRCodeService {
                     },
                     slot: {
                         select: {
+                            id: true,
+                            slotNumber: true,
                             type: true,
                             powerLevel: true
                         }
                     },
                     user: {
                         select: {
+                            id: true,
                             name: true,
-                            email: true
+                            email: true,
+                            contactNumber: true
                         }
                     }
                 }
@@ -41,18 +47,29 @@ class QRCodeService {
                 throw new Error('Booking not found');
             }
 
-            // Create QR code data
+            // Create comprehensive QR code data
             const qrData = {
+                type: 'booking_confirmation',
                 bookingId: booking.id,
+                userId: booking.user.id,
+                stationId: booking.station.id,
                 stationName: booking.station.name,
+                stationAddress: booking.station.address,
+                stationContact: booking.station.contact,
                 userName: booking.user.name,
+                userContact: booking.user.contactNumber,
                 evDetails: `${booking.ev.brand} ${booking.ev.model} (${booking.ev.licensePlate})`,
+                slotId: booking.slot.id,
+                slotNumber: booking.slot.slotNumber,
                 slotType: booking.slot.type,
                 powerLevel: booking.slot.powerLevel,
                 startTime: booking.startTime.toISOString(),
                 endTime: booking.endTime.toISOString(),
                 status: booking.status,
-                timestamp: new Date().toISOString()
+                estimatedCost: booking.estimatedCost,
+                batteryLevel: booking.batteryLevel,
+                generatedAt: new Date().toISOString(),
+                version: '2.0' // QR code version for future compatibility
             };
 
             // Generate QR code as base64 string
@@ -68,8 +85,15 @@ class QRCodeService {
                 width: 256
             });
 
-            // Store QR code in database (you might want to add a qrCode field to booking table)
-            // For now, we'll return the QR code data
+            // Update booking with QR code data
+            await prisma.booking.update({
+                where: { id: bookingId },
+                data: {
+                    qrCode: qrCodeDataURL,
+                    qrCodeData: JSON.stringify(qrData)
+                }
+            });
+
             return {
                 qrCodeDataURL,
                 qrData,
@@ -133,20 +157,47 @@ class QRCodeService {
         }
     }
 
-    // Verify QR code data
-    async verifyQRCode(qrCodeData) {
+    // Verify and process QR code data
+    async verifyQRCode(qrCodeData, stationMasterId) {
         try {
             const data = JSON.parse(qrCodeData);
             
-            if (data.bookingId) {
+            if (data.type === 'booking_confirmation' && data.bookingId) {
                 // Verify booking QR code
                 const booking = await prisma.booking.findUnique({
                     where: { id: data.bookingId },
                     include: {
-                        station: true,
-                        user: true,
-                        ev: true,
-                        slot: true
+                        station: {
+                            include: {
+                                stationMasters: {
+                                    where: { userId: stationMasterId }
+                                }
+                            }
+                        },
+                        user: {
+                            select: {
+                                id: true,
+                                name: true,
+                                email: true,
+                                contactNumber: true
+                            }
+                        },
+                        ev: {
+                            select: {
+                                brand: true,
+                                model: true,
+                                licensePlate: true
+                            }
+                        },
+                        slot: {
+                            select: {
+                                id: true,
+                                slotNumber: true,
+                                type: true,
+                                powerLevel: true,
+                                isOccupied: true
+                            }
+                        }
                     }
                 });
 
@@ -154,26 +205,43 @@ class QRCodeService {
                     return { valid: false, message: 'Booking not found' };
                 }
 
+                // Verify station master has access to this station
+                if (booking.station.stationMasters.length === 0) {
+                    return { valid: false, message: 'Unauthorized: You do not have access to this station' };
+                }
+
                 // Check if booking is still valid
                 const now = new Date();
                 const startTime = new Date(booking.startTime);
                 const endTime = new Date(booking.endTime);
+                const gracePeriod = 15 * 60 * 1000; // 15 minutes grace period
 
                 if (booking.status === 'CANCELLED') {
                     return { valid: false, message: 'Booking has been cancelled' };
                 }
 
-                if (now > endTime) {
+                if (booking.status === 'CHARGING_DONE') {
+                    return { valid: false, message: 'Booking has already been completed' };
+                }
+
+                if (now > new Date(endTime.getTime() + gracePeriod)) {
                     return { valid: false, message: 'Booking has expired' };
                 }
 
-                if (now < startTime) {
-                    return { valid: false, message: 'Booking has not started yet' };
+                if (now < new Date(startTime.getTime() - gracePeriod)) {
+                    return { valid: false, message: 'Booking time has not arrived yet' };
+                }
+
+                // Check if slot is available
+                if (booking.slot.isOccupied && booking.status !== 'CHARGING') {
+                    return { valid: false, message: 'Charging slot is currently occupied' };
                 }
 
                 return {
                     valid: true,
                     booking,
+                    canConfirm: booking.status === 'PENDING' || booking.status === 'CONFIRMED',
+                    canComplete: booking.status === 'CHARGING',
                     message: 'Valid booking QR code'
                 };
             }
@@ -181,11 +249,20 @@ class QRCodeService {
             if (data.stationId) {
                 // Verify station QR code
                 const station = await prisma.station.findUnique({
-                    where: { id: data.stationId }
+                    where: { id: data.stationId },
+                    include: {
+                        stationMasters: {
+                            where: { userId: stationMasterId }
+                        }
+                    }
                 });
 
                 if (!station) {
                     return { valid: false, message: 'Station not found' };
+                }
+
+                if (station.stationMasters.length === 0) {
+                    return { valid: false, message: 'Unauthorized: You do not have access to this station' };
                 }
 
                 return {
@@ -200,6 +277,152 @@ class QRCodeService {
         } catch (error) {
             console.error('Error verifying QR code:', error);
             return { valid: false, message: 'Invalid QR code data' };
+        }
+    }
+
+    // Confirm booking via QR code scan
+    async confirmBookingViaQR(bookingId, stationMasterId, slotId) {
+        try {
+            // Update booking status to confirmed/charging
+            const booking = await prisma.booking.update({
+                where: { id: bookingId },
+                data: {
+                    status: 'CHARGING',
+                    confirmedAt: new Date()
+                },
+                include: {
+                    user: {
+                        select: {
+                            name: true,
+                            email: true
+                        }
+                    },
+                    station: {
+                        select: {
+                            name: true
+                        }
+                    }
+                }
+            });
+
+            // Update slot status to occupied
+            await prisma.chargingSlot.update({
+                where: { id: slotId },
+                data: {
+                    isOccupied: true,
+                    status: 'OCCUPIED'
+                }
+            });
+
+            // Create notification for user
+            await prisma.notification.create({
+                data: {
+                    userId: booking.userId,
+                    message: `Your charging session has started at ${booking.station.name}`,
+                    type: 'BOOKING_CONFIRMATION'
+                }
+            });
+
+            // Log the confirmation
+            console.log(`Booking ${bookingId} confirmed by station master ${stationMasterId}`);
+
+            return {
+                success: true,
+                booking,
+                message: 'Booking confirmed and charging session started'
+            };
+
+        } catch (error) {
+            console.error('Error confirming booking via QR:', error);
+            throw new Error('Failed to confirm booking');
+        }
+    }
+
+    // Complete charging session
+    async completeChargingSession(bookingId, stationMasterId, completionData) {
+        try {
+            const { energyConsumed, actualCost, chargingDuration } = completionData;
+
+            // Update booking status to completed
+            const booking = await prisma.booking.update({
+                where: { id: bookingId },
+                data: {
+                    status: 'CHARGING_DONE',
+                    completedAt: new Date(),
+                    energyConsumed,
+                    actualCost,
+                    chargingDuration
+                },
+                include: {
+                    user: {
+                        select: {
+                            name: true,
+                            email: true
+                        }
+                    },
+                    station: {
+                        select: {
+                            name: true
+                        }
+                    },
+                    slot: {
+                        select: {
+                            id: true
+                        }
+                    }
+                }
+            });
+
+            // Free up the slot
+            await prisma.chargingSlot.update({
+                where: { id: booking.slot.id },
+                data: {
+                    isOccupied: false,
+                    status: 'AVAILABLE'
+                }
+            });
+
+            // Update station available slots count
+            await prisma.station.update({
+                where: { id: booking.stationId },
+                data: {
+                    availableSlots: {
+                        increment: 1
+                    }
+                }
+            });
+
+            // Create charging history record
+            await prisma.chargingHistory.create({
+                data: {
+                    userId: booking.userId,
+                    stationId: booking.stationId,
+                    bookingId: booking.id,
+                    evId: booking.evId,
+                    energyUsed: energyConsumed,
+                    cost: actualCost,
+                    duration: chargingDuration
+                }
+            });
+
+            // Create notification for user
+            await prisma.notification.create({
+                data: {
+                    userId: booking.userId,
+                    message: `Your charging session at ${booking.station.name} has been completed. Energy consumed: ${energyConsumed} kWh`,
+                    type: 'BOOKING_CONFIRMATION'
+                }
+            });
+
+            return {
+                success: true,
+                booking,
+                message: 'Charging session completed successfully'
+            };
+
+        } catch (error) {
+            console.error('Error completing charging session:', error);
+            throw new Error('Failed to complete charging session');
         }
     }
 

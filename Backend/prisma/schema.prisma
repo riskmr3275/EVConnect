@@ -166,10 +166,20 @@ model StationMasterDetails {
   station       Station  @relation(fields: [stationId], references: [id], onDelete: Cascade)
   ownerId       String
   owner         User     @relation("StationMasterOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  employeeId    String   @unique // Unique employee ID for the station master
+  designation   String   @default("Station Master")
   shift         String
   experience    Int?
   certification String?
+  salary        Float?
+  joiningDate   DateTime @default(now())
+  isActive      Boolean  @default(true)
+  permissions   String?  // JSON string of permissions
   createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([stationId])
+  @@index([ownerId])
 }
 
 model EV {
@@ -197,11 +207,22 @@ model Station {
   ownerId        String
   owner          User      @relation("StationOwner", fields: [ownerId], references: [id], onDelete: Cascade)
   address        String
+  city           String?
+  state          String?
+  zipCode        String?
   latitude       Float
   longitude      Float
   totalSlots     Int
   availableSlots Int
   contact        String?
+  email          String?
+  operatingHours String?   @default("24/7")
+  amenities      String?   // JSON string of amenities
+  images         String?   // JSON string of image URLs
+  isActive       Boolean   @default(true)
+  isVerified     Boolean   @default(false)
+  rating         Float?    @default(0.0)
+  totalReviews   Int       @default(0)
 
   stationMasters    StationMasterDetails[]
   bookings          Booking[]
@@ -213,6 +234,8 @@ model Station {
 
   @@index([ownerId])
   @@index([latitude, longitude])
+  @@index([city, state])
+  @@index([isActive, isVerified])
 }
 
 model Booking {
@@ -226,6 +249,14 @@ model Booking {
   status          BookingStatus    @default(PENDING)
   qrCode          String?          // Store QR code data URL
   qrCodeData      String?          // Store QR code JSON data
+  estimatedCost   Float?           // Estimated cost for the booking
+  actualCost      Float?           // Actual cost after completion
+  batteryLevel    Int?             // Battery level at booking time
+  portType        String?          // Type of charging port
+  energyConsumed  Float?           // Energy consumed during charging
+  chargingDuration Int?            // Actual charging duration in minutes
+  confirmedAt     DateTime?        // When booking was confirmed by station master
+  completedAt     DateTime?        // When charging was completed
   user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   station         Station          @relation(fields: [stationId], references: [id], onDelete: Cascade)
   ev              EV               @relation(fields: [evId], references: [id], onDelete: Cascade)
@@ -238,6 +269,7 @@ model Booking {
   @@index([userId])
   @@index([stationId])
   @@index([startTime, endTime])
+  @@index([status])
 }
 
 model Transaction {
@@ -254,15 +286,23 @@ model Transaction {
 }
 
 model ChargingSlot {
-  id         String    @id @default(uuid())
-  stationId  String
-  station    Station   @relation(fields: [stationId], references: [id], onDelete: Cascade)
-  isOccupied Boolean   @default(false)
-  powerLevel Int // in kW
-  type       SlotType
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-  bookings   Booking[] @relation("ChargingSlotToBooking")
+  id           String    @id @default(uuid())
+  stationId    String
+  station      Station   @relation(fields: [stationId], references: [id], onDelete: Cascade)
+  slotNumber   String    // Human readable slot number (e.g., "A1", "B2")
+  isOccupied   Boolean   @default(false)
+  isActive     Boolean   @default(true) // Can be disabled for maintenance
+  powerLevel   Int       // in kW
+  type         SlotType
+  pricePerKwh  Float     @default(8.0) // Price per kWh for this slot
+  status       String    @default("AVAILABLE") // AVAILABLE, OCCUPIED, MAINTENANCE, OUT_OF_ORDER
+  lastMaintenance DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  bookings     Booking[] @relation("ChargingSlotToBooking")
+
+  @@unique([stationId, slotNumber])
+  @@index([stationId, status])
 }
 
 model Review {

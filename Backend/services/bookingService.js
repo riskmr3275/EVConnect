@@ -163,16 +163,73 @@ class BookingService {
                 }
             });
 
+            // Generate QR code for the booking
+            const qrCodeService = require('./qrCodeService');
+            const qrCodeResult = await qrCodeService.generateBookingQRCode(booking.id);
+
             // Create notification
             await prisma.notification.create({
                 data: {
                     userId: userId,
-                    message: `Booking created for ${booking.station.name}. Please complete payment to confirm.`,
+                    message: `Booking created for ${booking.station.name}. QR code generated for station access.`,
                     type: 'BOOKING_CONFIRMATION'
                 }
             });
 
-            return booking;
+            // Send email notification with QR code
+            const emailService = require('../utils/emailService');
+            try {
+                await emailService.sendQRBookingConfirmation(booking.user.email, {
+                    userName: booking.user.name,
+                    bookingId: booking.id,
+                    stationName: booking.station.name,
+                    stationAddress: booking.station.address,
+                    slotNumber: booking.slot.slotNumber || booking.slot.id,
+                    startTime: booking.startTime,
+                    duration: Math.round((new Date(booking.endTime) - new Date(booking.startTime)) / (1000 * 60)),
+                    estimatedCost: booking.estimatedCost || 0,
+                    qrCodeUrl: qrCodeResult.qrCodeDataURL
+                });
+            } catch (emailError) {
+                console.error('Failed to send QR booking confirmation email:', emailError);
+            }
+
+            // Notify station masters about new booking
+            const stationMasters = await prisma.stationMasterDetails.findMany({
+                where: {
+                    stationId: booking.stationId,
+                    isActive: true
+                },
+                include: {
+                    user: {
+                        select: {
+                            email: true
+                        }
+                    }
+                }
+            });
+
+            for (const master of stationMasters) {
+                try {
+                    await emailService.sendStationMasterBookingNotification(master.user.email, {
+                        bookingId: booking.id,
+                        customerName: booking.user.name,
+                        vehicleDetails: `${booking.ev.brand} ${booking.ev.model} (${booking.ev.licensePlate})`,
+                        slotNumber: booking.slot.slotNumber || booking.slot.id,
+                        startTime: booking.startTime,
+                        duration: Math.round((new Date(booking.endTime) - new Date(booking.startTime)) / (1000 * 60)),
+                        portType: booking.slot.type
+                    });
+                } catch (emailError) {
+                    console.error('Failed to send station master notification:', emailError);
+                }
+            }
+
+            return {
+                ...booking,
+                qrCode: qrCodeResult.qrCodeDataURL,
+                qrCodeData: qrCodeResult.qrData
+            };
         } catch (error) {
             console.error("Error creating booking:", error);
             throw new Error(error.message || "Failed to create booking");
