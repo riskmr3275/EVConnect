@@ -139,6 +139,100 @@ async forgotPassword(email) {
       throw new Error("Invalid or expired token");
     }
   }
+
+  // Update user profile
+  async updateProfile(userId, updateData) {
+    try {
+      const { name, email, contactNumber, dateOfBirth, gender, about, address, city, state, zipCode } = updateData;
+
+      // Update user basic info
+      const updatedUser = await prisma.user.update({
+        where: { id: userId },
+        data: {
+          ...(name && { name }),
+          ...(email && { email }),
+          ...(contactNumber && { contactNumber }),
+          ...(dateOfBirth && { dateOfBirth: new Date(dateOfBirth) }),
+          ...(gender && { gender }),
+          ...(about !== undefined && { about }),
+        },
+        include: {
+          userDetails: true
+        }
+      });
+
+      // Update or create user details
+      if (address || city || state || zipCode) {
+        await prisma.userDetails.upsert({
+          where: { userId },
+          update: {
+            ...(address !== undefined && { address }),
+            ...(city && { city }),
+            ...(state && { state }),
+            ...(zipCode && { zipCode }),
+          },
+          create: {
+            userId,
+            address: address || '',
+            city: city || '',
+            state: state || '',
+            zipCode: zipCode || '',
+          }
+        });
+      }
+
+      // Fetch updated user with details
+      const userWithDetails = await prisma.user.findUnique({
+        where: { id: userId },
+        include: {
+          userDetails: true
+        }
+      });
+
+      // Remove password from response
+      const { password, ...userResponse } = userWithDetails;
+      return userResponse;
+
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      throw new Error("Failed to update profile");
+    }
+  }
+
+  // Change password
+  async changePassword(userId, currentPassword, newPassword) {
+    try {
+      // Get user with current password
+      const user = await prisma.user.findUnique({
+        where: { id: userId }
+      });
+
+      if (!user) {
+        throw new Error("User not found");
+      }
+
+      // Verify current password
+      const isCurrentPasswordValid = await bcrypt.compare(currentPassword, user.password);
+      if (!isCurrentPasswordValid) {
+        throw new Error("Current password is incorrect");
+      }
+
+      // Hash new password
+      const hashedNewPassword = await bcrypt.hash(newPassword, 12);
+
+      // Update password
+      await prisma.user.update({
+        where: { id: userId },
+        data: { password: hashedNewPassword }
+      });
+
+      return true;
+
+    } catch (error) {
+      console.error("Error changing password:", error);
+      throw new Error(error.message || "Failed to change password");
+    }
+  }
 }
 
 module.exports = new AuthService();

@@ -224,6 +224,8 @@ model Booking {
   startTime       DateTime
   endTime         DateTime
   status          BookingStatus    @default(PENDING)
+  qrCode          String?          // Store QR code data URL
+  qrCodeData      String?          // Store QR code JSON data
   user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   station         Station          @relation(fields: [stationId], references: [id], onDelete: Cascade)
   ev              EV               @relation(fields: [evId], references: [id], onDelete: Cascade)

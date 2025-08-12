@@ -74,6 +74,49 @@ async loginUser(req, res) {
       return res.status(400).json({ message: error.message });
     }
   }
+
+  // Update user profile
+  async updateProfile(req, res) {
+    try {
+      const userId = req.user.userId;
+      const updateData = req.body;
+      
+      const updatedUser = await authService.updateProfile(userId, updateData);
+      
+      return res.status(200).json({
+        success: true,
+        message: "Profile updated successfully",
+        user: updatedUser
+      });
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      return res.status(500).json({
+        success: false,
+        message: error.message
+      });
+    }
+  }
+
+  // Change password
+  async changePassword(req, res) {
+    try {
+      const userId = req.user.userId;
+      const { currentPassword, newPassword } = req.body;
+      
+      await authService.changePassword(userId, currentPassword, newPassword);
+      
+      return res.status(200).json({
+        success: true,
+        message: "Password changed successfully"
+      });
+    } catch (error) {
+      console.error("Error changing password:", error);
+      return res.status(500).json({
+        success: false,
+        message: error.message
+      });
+    }
+  }
 }
 
 module.exports = new AuthController();
