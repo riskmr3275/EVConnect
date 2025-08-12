@@ -39,24 +39,29 @@ export default function EVStationsPage() {
     longitude: '',
   });
 
-  const [data,setData]=useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  useEffect(()=>{
-    const fetchStationData=async ()=>
-      {
-        try {
-          const response=await apiConnector("GET",stationEndpoints.GET_ALL_STATION);
+  
+  useEffect(() => {
+    const fetchStationData = async () => {
+      try {
+        setLoading(true);
+        const response = await apiConnector("GET", stationEndpoints.GET_ALL_STATION);
+        if (response.data && response.data.data) {
           setStations(response.data.data);
-        } catch (error) {
-          setError(err.message || "Something went wrong");
-        }finally
-        {
-          setLoading(false);
+        } else {
+          setStations([]);
         }
+      } catch (err) {
+        console.error("Error fetching stations:", err);
+        setError(err.message || "Something went wrong");
+        setStations([]);
+      } finally {
+        setLoading(false);
       }
-      fetchStationData()
-  },[])
+    };
+    fetchStationData();
+  }, []);
 
 console.log("object from station",stations)
   const requestSort = (key) => {
@@ -84,6 +89,44 @@ console.log("object from station",stations)
     dispatch(addingStation(station, token));
     setShowAddStationModal(false);
   };
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="flex-1 overflow-auto bg-gray-100 text-black">
+        <div className="p-4">
+          <div className="flex items-center justify-center h-64">
+            <div className="text-center">
+              <RefreshCw className="w-8 h-8 animate-spin text-blue-600 mx-auto mb-4" />
+              <p className="text-gray-600">Loading stations...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="flex-1 overflow-auto bg-gray-100 text-black">
+        <div className="p-4">
+          <div className="flex items-center justify-center h-64">
+            <div className="text-center">
+              <AlertTriangle className="w-8 h-8 text-red-600 mx-auto mb-4" />
+              <p className="text-red-600 mb-4">Error loading stations: {error}</p>
+              <button 
+                onClick={() => window.location.reload()} 
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+              >
+                Retry
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex-1 overflow-auto bg-gray-100 text-black">
@@ -114,44 +157,96 @@ console.log("object from station",stations)
 
         {/* Status Summary Cards */}
         <div className="grid grid-cols-4 gap-4 mb-6">
-          <StatusCard title="Total Stations" value={stations.length} icon={<Users className="text-blue-500" />} bgColor="bg-blue-100" />
-          <StatusCard title="Active Stations" value={stations.filter(s => s.status === 'Active').length} icon={<RefreshCw className="text-green-500" />} bgColor="bg-green-100" />
-          <StatusCard title="Under Maintenance" value={stations.filter(s => s.status === 'Maintenance').length} icon={<AlertTriangle className="text-yellow-500" />} bgColor="bg-yellow-100" />
-          <StatusCard title="Inactive Stations" value={stations.filter(s => s.status === 'Inactive').length} icon={<AlertTriangle className="text-red-500" />} bgColor="bg-red-100" />
+          <StatusCard 
+            title="Total Stations" 
+            value={stations.length} 
+            icon={<Users className="text-blue-500" />} 
+            bgColor="bg-blue-100" 
+          />
+          <StatusCard 
+            title="Active Stations" 
+            value={stations.filter(s => s.availableSlots > 0).length} 
+            icon={<RefreshCw className="text-green-500" />} 
+            bgColor="bg-green-100" 
+          />
+          <StatusCard 
+            title="Full Stations" 
+            value={stations.filter(s => s.availableSlots === 0).length} 
+            icon={<AlertTriangle className="text-yellow-500" />} 
+            bgColor="bg-yellow-100" 
+          />
+          <StatusCard 
+            title="Total Slots" 
+            value={stations.reduce((total, station) => total + (station.totalSlots || 0), 0)} 
+            icon={<AlertTriangle className="text-purple-500" />} 
+            bgColor="bg-purple-100" 
+          />
         </div>
 
         {/* Table */}
         <div className="bg-white shadow rounded-lg overflow-hidden">
-          <table className="w-full text-left">
-            <thead className="bg-gray-100 text-gray-700 text-sm">
-              <tr>
-                <TableHeader text="Location" onClick={() => requestSort('location')} active={sortConfig.key === 'location'} />
-                <TableHeader text="Status" onClick={() => requestSort('status')} active={sortConfig.key === 'status'} />
-                <TableHeader text="Ports" onClick={() => requestSort('ports')} active={sortConfig.key === 'ports'} />
-                <TableHeader text="Active Charging" onClick={() => requestSort('activeCharging')} active={sortConfig.key === 'activeCharging'} />
-                <TableHeader text="Station Master" onClick={() => requestSort('stationMaster')} active={sortConfig.key === 'stationMaster'} />
-                <th className="px-6 py-3 font-medium">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {stations.map(station => (
-                
-                <tr key={station.id} className="hover:bg-gray-50 border-t">
-                  <div>{station}</div>
-                  <td className="px-6 py-4">{station?.address}</td>
-                  <td className="px-6 py-4"><StatusBadge status={station?.status} /></td>
-                  <td className="px-6 py-4">{station?.ports}</td>
-                  <td className="px-6 py-4">{station?.activeCharging}</td>
-                  <td className="px-6 py-4">{station?.stationMaster}</td>
-                  <td className="px-6 py-4">
-                    <button className="text-gray-500 hover:text-gray-700">
-                      <MoreHorizontal className="w-5 h-5" />
-                    </button>
-                  </td>
+          {stations.length === 0 ? (
+            <div className="text-center py-12">
+              <Users className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">No stations found</h3>
+              <p className="text-gray-600 mb-6">Get started by adding your first EV charging station.</p>
+              <button
+                className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg flex items-center gap-2 mx-auto"
+                onClick={() => setShowAddStationModal(true)}
+              >
+                <Plus className="h-5 w-5" />
+                Add Your First Station
+              </button>
+            </div>
+          ) : (
+            <table className="w-full text-left">
+              <thead className="bg-gray-100 text-gray-700 text-sm">
+                <tr>
+                  <TableHeader text="Location" onClick={() => requestSort('location')} active={sortConfig.key === 'location'} />
+                  <TableHeader text="Status" onClick={() => requestSort('status')} active={sortConfig.key === 'status'} />
+                  <TableHeader text="Total Slots" onClick={() => requestSort('totalSlots')} active={sortConfig.key === 'totalSlots'} />
+                  <TableHeader text="Active Charging" onClick={() => requestSort('activeCharging')} active={sortConfig.key === 'activeCharging'} />
+                  <TableHeader text="Contact" onClick={() => requestSort('contact')} active={sortConfig.key === 'contact'} />
+                  <th className="px-6 py-3 font-medium">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {stations.map(station => (
+                  <tr key={station.id} className="hover:bg-gray-50 border-t">
+                    <td className="px-6 py-4">
+                      <div>
+                        <div className="font-medium text-gray-900">{station?.name || 'Unnamed Station'}</div>
+                        <div className="text-sm text-gray-500">{station?.address}</div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <StatusBadge status={station?.availableSlots > 0 ? 'Active' : 'Full'} />
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="text-sm">
+                        <div className="font-medium">{station?.totalSlots || 0}</div>
+                        <div className="text-gray-500">{station?.availableSlots || 0} available</div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="font-medium">{(station?.totalSlots - station?.availableSlots) || 0}</div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="text-sm">
+                        <div className="font-medium">{station?.contact || 'N/A'}</div>
+                        <div className="text-gray-500">{station?.companyName}</div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <button className="text-gray-500 hover:text-gray-700 p-1 rounded hover:bg-gray-100">
+                        <MoreHorizontal className="w-5 h-5" />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
       </div>
 
@@ -261,13 +356,18 @@ function TableHeader({ text, onClick, active }) {
 }
 
 function StatusBadge({ status }) {
-  let color = 'gray';
-  if (status === 'Active') color = 'green';
-  if (status === 'Maintenance') color = 'yellow';
-  if (status === 'Inactive') color = 'red';
+  let colorClasses = 'bg-gray-100 text-gray-800';
+  
+  if (status === 'Active') {
+    colorClasses = 'bg-green-100 text-green-800';
+  } else if (status === 'Maintenance') {
+    colorClasses = 'bg-yellow-100 text-yellow-800';
+  } else if (status === 'Inactive' || status === 'Full') {
+    colorClasses = 'bg-red-100 text-red-800';
+  }
 
   return (
-    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-${color}-100 text-${color}-800`}>
+    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${colorClasses}`}>
       {status}
     </span>
   );

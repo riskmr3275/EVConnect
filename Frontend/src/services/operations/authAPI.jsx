@@ -1,16 +1,17 @@
-import { useNavigate } from "react-router-dom";
 import { setToken } from "../../slices/authSlice";
 import { toast } from "react-toastify";
-
-import { setUser,setLoading } from "../../slices/profileSlice";
+import { setUser, setLoading } from "../../slices/profileSlice";
 import { apiConnector } from "../apiconnector";
-import { authEndpoints  } from "../api";
- 
+import { authEndpoints } from "../api";
+
 const {
-  LOGIN_API
+  LOGIN_API,
+  SIGNUP_API,
+  RESETPASSTOKEN_API,
+  RESETPASSWORD_API
 } = authEndpoints;
 
-  
+
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -31,8 +32,8 @@ export function signUp(
     try {
       const response = await apiConnector("POST", SIGNUP_API, {
         user_id: scholarNumber,
-        first_name:firstName,
-        last_name:lastName,
+        first_name: firstName,
+        last_name: lastName,
         email,
         password,
         confirmPassword,
@@ -44,8 +45,6 @@ export function signUp(
 
       if (!response.data.success) {
         throw new Error(response.data.message);
-        toast.error("cannot signup");
-        return;
       }
       toast.success("Signup Successful");
       navigate("/login");
@@ -64,11 +63,11 @@ export function signUp(
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 export function login(email, password, navigate) {
   return async (dispatch) => {
-    
+
     dispatch(setLoading(true));
 
     try {
-       const response = await apiConnector("POST", LOGIN_API, {
+      const response = await apiConnector("POST", LOGIN_API, {
         email,
         password,
       });
@@ -88,19 +87,20 @@ export function login(email, password, navigate) {
       localStorage.setItem("token", JSON.stringify(response.data?.token));
       localStorage.setItem("user", JSON.stringify(response.data.user));
       // navigate("/dashboard/userDashboard")
-      if(response.data?.user?.accountType === "USER"){
-        navigate("/dashboard/find");}
-        else if(response.data?.user?.accountType === "OWNER"){
-          navigate("/dashboard/ownerDashboard");
-        }else if(response.data?.user?.accountType === "STATIONMASTER")
-        {
-          navigate("/dashboard/stationMasterDashboard");
-        }
+      if (response.data?.user?.accountType === "USER") {
+        navigate("/dashboard/find");
+      }
+      else if (response.data?.user?.accountType === "OWNER") {
+        navigate("/dashboard/ownerDashboard");
+      } else if (response.data?.user?.accountType === "STATIONMASTER") {
+        navigate("/dashboard/stationMasterDashboard");
+      }
     } catch (error) {
       console.log("LOGIN API ERROR............", error);
-      toast.error("Login Failed");}
-      dispatch(setLoading(false));
-    
+      toast.error("Login Failed");
+    }
+    dispatch(setLoading(false));
+
   };
 }
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -165,7 +165,7 @@ export function resetPassword(password, confirmPassword, token, navigate) {
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
- 
+
 
 
 
@@ -176,7 +176,7 @@ export function logout(navigate) {
   return (dispatch) => {
     dispatch(setToken(null));
     dispatch(setUser(null));
- 
+
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     toast.success("Logged Out");

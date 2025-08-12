@@ -1,21 +1,16 @@
 import React, { useState } from 'react';
-import { LogOut, Search, Calendar, Home, Settings, Car, BarChart2, Users, DollarSign, ClipboardList } from 'lucide-react';
+import { LogOut, Search, Calendar, Home, Settings, Car, BarChart2, Users, DollarSign, ClipboardList, X, Menu } from 'lucide-react';
 import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom'; // For navigating between routes
-import {logout} from "../../services/operations/authAPI"
+import { useNavigate } from 'react-router-dom';
+import { logout } from "../../services/operations/authAPI";
 import { useDispatch } from 'react-redux';
-const Sidebar1 = () => {
+
+const Sidebar1 = ({ darkMode, toggleDarkMode, sidebarOpen, setSidebarOpen }) => {
   const dispatch = useDispatch();
   const [activeTab, setActiveTab] = useState('dashboard');
-  const [darkMode, setDarkMode] = useState(false);
   const { user } = useSelector((state) => state.profile);
   const sidebarClass = darkMode ? 'bg-gray-800' : 'bg-black';
-  const navigate = useNavigate(); // To navigate to the respective route
-
-  // Toggle dark mode
-  const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
-  };
+  const navigate = useNavigate();
 
   const renderTabs = () => {
     if (!user) return null;
@@ -74,62 +69,102 @@ const Sidebar1 = () => {
 
   const tabs = renderTabs();
 
+  const handleNavigation = (tab) => {
+    if (tab.name === 'logout') {
+      dispatch(logout(navigate));
+    } else {
+      setActiveTab(tab.name);
+      navigate(tab.route);
+      // Close mobile sidebar after navigation
+      if (setSidebarOpen) {
+        setSidebarOpen(false);
+      }
+    }
+  };
+
   return (
-    <>
-      {/* Desktop Sidebar */}
-      <div className={`${sidebarClass} w-80 flex-shrink-0 hidden md:block h-full border-r-1 border-white overflow-x-hidden`}>
-        <div className="p-4">
-          <nav>
-            <ul className="space-y-2 p-2 rounded-2xl h-full">
-              {tabs?.map((tab) => (
-                <li key={tab.name}>
-                  <button
-                    onClick={() => {
-                      if (tab.name === 'logout') {
-                        console.log('Logout clicked');
-                        dispatch(logout(navigate));
-                        // Add logout functionality here if necessary
-                      } else {
-                        setActiveTab(tab.name);
-                        navigate(tab.route); // Navigate to the selected route
-                      }
-                    }}
-                    className={`cursor-pointer flex items-center w-full py-2 px-4 rounded-lg ${tab.name === activeTab ? 'bg-white text-black' : tab.special ? 'text-red-600 hover:cursor-pointer hover:text-red-900' : 'text-gray-300 hover:bg-gray-500 hover:cursor-pointer '}`}
-                  >
-                    {tab.icon}
-                    {tab.label}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </nav>
+    <div className={`${sidebarClass} h-full flex flex-col`}>
+      {/* Sidebar Header */}
+      <div className="p-4 border-b border-gray-700">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+              <Car className="w-5 h-5 text-white" />
+            </div>
+            <div className="text-white">
+              <h2 className="text-lg font-semibold">EV Station</h2>
+              <p className="text-xs text-gray-400 capitalize">{user?.accountType?.toLowerCase()}</p>
+            </div>
+          </div>
+          {/* Mobile Close Button */}
+          <button
+            onClick={() => setSidebarOpen && setSidebarOpen(false)}
+            className="lg:hidden p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700"
+          >
+            <X className="w-5 h-5" />
+          </button>
         </div>
       </div>
 
-      {/* Mobile Sidebar */}
-      <div className={`${sidebarClass} w-16 flex-shrink-0 md:hidden flex flex-col items-center py-4`}>
-        <div className="space-y-4">
-          {tabs?.map((tab) => (
-            <button
-              key={tab.name}
-              onClick={() => {
-                if (tab.name === 'logout') {
-                  console.log('Logout clicked');
-                  dispatch(logout(navigate));
-                  // Add logout functionality here if necessary
-                } else {
-                  setActiveTab(tab.name);
-                  navigate(tab.route); // Navigate to the selected route
-                }
-              }}
-              className={`p-3 rounded-full ${tab.name === activeTab ? 'bg-indigo-900' : 'hover:bg-indigo-600'}`}
-            >
-              {React.cloneElement(tab.icon, { color: 'white', size: 20, className: '' })}
-            </button>
-          ))}
+      {/* User Profile Section */}
+      <div className="p-4 border-b border-gray-700">
+        <div className="flex items-center space-x-3">
+          <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+            <span className="text-white font-semibold text-sm">
+              {user?.firstName?.charAt(0)?.toUpperCase() || 'U'}
+            </span>
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-white font-medium truncate">
+              {user?.firstName} {user?.lastName}
+            </p>
+            <p className="text-gray-400 text-sm truncate">{user?.email}</p>
+          </div>
         </div>
       </div>
-    </>
+
+      {/* Navigation */}
+      <nav className="flex-1 p-4 overflow-y-auto">
+        <ul className="space-y-2">
+          {tabs?.map((tab) => (
+            <li key={tab.name}>
+              <button
+                onClick={() => handleNavigation(tab)}
+                className={`w-full flex items-center px-4 py-3 rounded-lg text-left transition-all duration-200 ${
+                  tab.name === activeTab 
+                    ? 'bg-blue-600 text-white shadow-lg' 
+                    : tab.special 
+                    ? 'text-red-400 hover:text-red-300 hover:bg-red-900/20' 
+                    : 'text-gray-300 hover:bg-gray-700 hover:text-white'
+                }`}
+              >
+                <span className="flex-shrink-0">
+                  {React.cloneElement(tab.icon, { 
+                    size: 20, 
+                    className: 'mr-3',
+                    color: tab.name === activeTab ? 'white' : tab.special ? 'currentColor' : 'currentColor'
+                  })}
+                </span>
+                <span className="font-medium">{tab.label}</span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      </nav>
+
+      {/* Footer */}
+      <div className="p-4 border-t border-gray-700">
+        <div className="flex items-center justify-between text-gray-400 text-sm">
+          <span>© 2024 EV Station</span>
+          <button
+            onClick={toggleDarkMode}
+            className="p-2 rounded-md hover:bg-gray-700 hover:text-white transition-colors"
+          >
+            {darkMode ? '🌞' : '🌙'}
+          </button>
+        </div>
+      </div>
+    </div>
   );
 };
 
